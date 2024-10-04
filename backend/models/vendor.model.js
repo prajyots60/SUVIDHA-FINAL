@@ -1,9 +1,11 @@
 import mongoose from "mongoose";
+import User from "../models/user.model.js";
 
 // Define the schema
 const vendorSchema = new mongoose.Schema({
-  name: {
-    type: String,
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
     required: true,
   },
   address: {
@@ -18,21 +20,14 @@ const vendorSchema = new mongoose.Schema({
     type: String,
     default: "",  
   },
-  image: {
+  profileImage: {  // Updated field name for consistency
     type: String,
-    default: "https://via.placeholder.com/300x200",
+    default: null,  // Default to null if no image provided
   },
-  gallery: {
+  galleryImages: {  // Updated field name for consistency
     type: [String],
     default: [],
   },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    match: [/.+\@.+\..+/, "Please enter a valid email address"], // Simple email validation
-  },
-  // Modified category field for flexibility
   category: {
     type: String,
     required: true,
@@ -43,6 +38,7 @@ const vendorSchema = new mongoose.Schema({
   },
 });
 
+// Create the Vendor model
 const Vendor = mongoose.model("Vendor", vendorSchema);
 
 export default Vendor;

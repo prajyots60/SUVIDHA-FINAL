@@ -1,39 +1,77 @@
 import Vendor from "../models/vendor.model.js";
+import cloudinary from "cloudinary";
 
 // Create Vendor
+// export const createVendor = async (req, res) => {
+//   const { name, address, occupation, email, description, location, category } = req.body;
+
+//   try {
+//     // Cloudinary will automatically handle the uploading
+//     const profileImageUrl = req.file ? req.file.path : null; // Getting path from multer
+//     const galleryImageUrls = req.files ? req.files.map(file => file.path) : []; // Getting paths for gallery images
+
+//     // Create the new vendor instance
+//     const newVendor = new Vendor({
+//       name,
+//       address,
+//       occupation,
+//       email,
+//       description,
+//       location,
+//       category,
+//       profileImage: profileImageUrl,
+//       galleryImages: galleryImageUrls,
+//     });
+
+//     await newVendor.save();
+//     res.status(201).json(newVendor);
+//   } catch (error) {
+//     console.error('Error creating vendor:', error);
+//     res.status(500).json({ message: 'Error creating vendor', error: error.message });
+//   }
+// };
+
 export const createVendor = async (req, res) => {
+  const {
+    userId, // Get userId from the request body
+    address,
+    occupation,
+    description,
+    category,
+    location,
+  } = req.body;
+
+  // Validate that userId is present
+  if (!userId) {
+    return res.status(400).json({ message: 'userId is required' });
+  }
+
   try {
-    const { name, address, occupation, email, description, location, category } = req.body; // Added location and category
+    const profileImageUrl = req.file ? req.file.path : null; // Single image upload for profile
+    const galleryImageUrls = req.files['gallery'] ? req.files['gallery'].map(file => file.path) : []; // Handling multiple gallery images
 
-    // Check if vendor with the same email already exists
-    const existingVendor = await Vendor.findOne({ email });
-    if (existingVendor) {
-      return res.status(400).json({ message: 'Email already in use' });
-    }
-
-    // Access Cloudinary URLs from req.files
-    const profileImageUrl = req.files['image'] ? req.files['image'][0].path : ''; // Use the first image for profile
-    const galleryUrls = req.files['gallery'] ? req.files['gallery'].map((file) => file.path) : [];
-
+    // Create a new Vendor instance
     const newVendor = new Vendor({
-      name,
+      userId, // Make sure to include userId
       address,
       occupation,
-      email,
-      description, // Added description here
-      location,    // Added location here
-      category,    // Added category here
-      image: profileImageUrl,
-      gallery: galleryUrls,
+      description,
+      profileImage: profileImageUrl,
+      galleryImages: galleryImageUrls,
+      category,
+      location,
     });
 
-    const savedVendor = await newVendor.save();
-    res.status(201).json(savedVendor);
+    await newVendor.save();
+    res.status(201).json(newVendor);
   } catch (error) {
-    console.error('Error creating vendor:', error); // Log error for debugging
-    res.status(500).json({ message: 'Error creating vendor' });
+    console.error('Error creating vendor:', error);
+    res.status(500).json({ message: 'Error creating vendor', error: error.message });
   }
 };
+
+
+
 
 // Get all vendors
 export const getVendors = async (req, res) => {
@@ -48,10 +86,12 @@ export const getVendors = async (req, res) => {
 // Get a single vendor by ID
 export const getVendorById = async (req, res) => {
   try {
+    console.log("Request Params:", req.params); // Log request parameters
     const vendor = await Vendor.findById(req.params.id);
     if (!vendor) return res.status(404).json({ message: "Vendor not found" });
     res.status(200).json(vendor);
   } catch (error) {
+    console.error(error); // Log the error
     res.status(500).json({ message: error.message });
   }
 };

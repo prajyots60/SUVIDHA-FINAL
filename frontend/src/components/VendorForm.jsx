@@ -2,7 +2,6 @@
 import { useState } from "react";
 
 const VendorForm = ({ onSubmit, initialData }) => {
-  // Add 'location' and 'category' to the vendor state object
   const [vendor, setVendor] = useState({
     name: initialData?.name || "",
     address: initialData?.address || "",
@@ -28,99 +27,134 @@ const VendorForm = ({ onSubmit, initialData }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="vendor-form">
+    <form onSubmit={handleSubmit} className="bg-gradient-to-r from-purple-500 to-indigo-500 p-8 rounded shadow-md max-w-lg mx-auto">
+      <h2 className="text-2xl font-bold mb-4 text-white">Vendor Information</h2>
+      
       {/* Name Field */}
-      <input
-        type="text"
-        name="name"
-        placeholder="Name"
-        value={vendor.name}
-        onChange={handleChange}
-        required
-      />
+      <div className="mb-4">
+        <input
+          type="text"
+          name="name"
+          placeholder="Name"
+          value={vendor.name}
+          onChange={handleChange}
+          required
+          className="border border-gray-300 rounded w-full px-4 py-2 focus:outline-none focus:ring focus:ring-purple-300"
+        />
+      </div>
 
       {/* Address Field */}
-      <input
-        type="text"
-        name="address"
-        placeholder="Address"
-        value={vendor.address}
-        onChange={handleChange}
-        required
-      />
+      <div className="mb-4">
+        <input
+          type="text"
+          name="address"
+          placeholder="Address"
+          value={vendor.address}
+          onChange={handleChange}
+          required
+          className="border border-gray-300 rounded w-full px-4 py-2 focus:outline-none focus:ring focus:ring-purple-300"
+        />
+      </div>
 
       {/* Occupation Field */}
-      <input
-        type="text"
-        name="occupation"
-        placeholder="Occupation"
-        value={vendor.occupation}
-        onChange={handleChange}
-        required
-      />
+      <div className="mb-4">
+        <input
+          type="text"
+          name="occupation"
+          placeholder="Occupation"
+          value={vendor.occupation}
+          onChange={handleChange}
+          required
+          className="border border-gray-300 rounded w-full px-4 py-2 focus:outline-none focus:ring focus:ring-purple-300"
+        />
+      </div>
 
       {/* Description Field */}
-      <textarea
-        name="description"
-        placeholder="Description"
-        value={vendor.description}
-        onChange={handleChange}
-        rows="4"
-        className="description-input"
-      />
+      <div className="mb-4">
+        <textarea
+          name="description"
+          placeholder="Description"
+          value={vendor.description}
+          onChange={handleChange}
+          rows="4"
+          className="border border-gray-300 rounded w-full px-4 py-2 focus:outline-none focus:ring focus:ring-purple-300"
+        />
+      </div>
 
       {/* Email Field */}
-      <input
-        type="email"
-        name="email"
-        placeholder="Email"
-        value={vendor.email}
-        onChange={handleChange}
-        required
-      />
+      <div className="mb-4">
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          value={vendor.email}
+          onChange={handleChange}
+          required
+          className="border border-gray-300 rounded w-full px-4 py-2 focus:outline-none focus:ring focus:ring-purple-300"
+        />
+      </div>
 
       {/* Profile Image Field */}
-      <input
-        type="text"
-        name="image"
-        placeholder="Profile Image URL"
-        value={vendor.image}
-        onChange={handleChange}
-      />
+      <div className="mb-4">
+        <input
+          type="text"
+          name="image"
+          placeholder="Profile Image URL"
+          value={vendor.image}
+          onChange={handleChange}
+          className="border border-gray-300 rounded w-full px-4 py-2 focus:outline-none focus:ring focus:ring-purple-300"
+        />
+      </div>
 
       {/* Gallery Field */}
-      <input
-        type="text"
-        name="gallery"
-        placeholder="Gallery Image URLs (comma separated)"
-        value={vendor.gallery.join(",")}
-        onChange={(e) =>
-          setVendor({ ...vendor, gallery: e.target.value.split(",") })
-        }
-      />
+      <div className="mb-4">
+        <input
+          type="text"
+          name="gallery"
+          placeholder="Gallery Image URLs (comma separated)"
+          value={vendor.gallery.join(",")}
+          onChange={(e) =>
+            setVendor({ ...vendor, gallery: e.target.value.split(",") })
+          }
+          className="border border-gray-300 rounded w-full px-4 py-2 focus:outline-none focus:ring focus:ring-purple-300"
+        />
+      </div>
 
       {/* New Location Field */}
-      <input
-        type="text"
-        name="location"
-        placeholder="Location"
-        value={vendor.location}
-        onChange={handleChange}
-        required
-      />
+      <div className="mb-4">
+        <input
+          type="text"
+          name="location"
+          placeholder="Location"
+          value={vendor.location}
+          onChange={handleChange}
+          required
+          className="border border-gray-300 rounded w-full px-4 py-2 focus:outline-none focus:ring focus:ring-purple-300"
+        />
+      </div>
 
       {/* New Category Field */}
-      <input
-        type="text"
-        name="category"
-        placeholder="Category"
-        value={vendor.category}
-        onChange={handleChange}
-        required
-      />
+      <div className="mb-4">
+        <input
+          type="text"
+          name="category"
+          placeholder="Category"
+          value={vendor.category}
+          onChange={handleChange}
+          required
+          className="border border-gray-300 rounded w-full px-4 py-2 focus:outline-none focus:ring focus:ring-purple-300"
+        />
+      </div>
 
       {/* Submit Button */}
-      <button type="submit">Submit</button>
+      <div>
+        <button
+          type="submit"
+          className="bg-purple-600 text-white rounded w-full py-2 hover:bg-purple-700 transition duration-300"
+        >
+          Submit
+        </button>
+      </div>
     </form>
   );
 };

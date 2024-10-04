@@ -1,3 +1,4 @@
+
 /* eslint-disable no-unused-vars */
 import {create} from "zustand";
 import axios from "../lib/axios.js";
@@ -72,4 +73,52 @@ export const useUserStore = create((set, get) => ({
       console.log("Error checking auth zustand", error.response.data);
     }
   },
+
+  // updateUser: async (id, { name, email }) => {
+  //   try {
+  //     const res = await axios.put(`/auth/profile/${id}`, { name, email });
+  //     set((state) => ({
+  //       user: { ...state.user, name: res.data.name, email: res.data.email },
+  //     }));
+  //     toast.success("Profile updated successfully!");
+  //     return true; // Indicate success
+  //   } catch (error) {
+  //     console.log("Error updating profile", error.response.data);
+  //     toast.error(error.response.data.message || "An error occurred while updating profile");
+  //     return false; // Indicate failure
+  //   }
+  // },
+
+  updateUser: async (data) => {
+    try {
+      const res = await axios.patch('/auth/update', data); // Update route
+      // Ensure set is called with a function that takes state
+      set((state) => ({
+        user: { ...state.user, ...res.data }, // Correctly update user in store
+        
+      }));
+      toast.success('Profile updated successfully!');
+      return true; // Indicate success
+    } catch (error) {
+      console.error('Error updating user:', error);
+      return false; // Indicate failure
+    }
+  },
+  
+
+  // New method to update password
+  updatePassword: async (id, { newPassword }) => {
+    set({ loading: true });
+    try {
+      const res = await axios.patch(`/auth/update-password`, { newPassword });
+      set({ user: res.data, loading: false });
+      toast.success("Password updated successfully!");
+      return true; // Indicate success
+    } catch (error) {
+      console.error("Error updating password:", error);
+      set({ loading: false });
+      return false; // Indicate failure
+    }
+  },
+  
 }));
