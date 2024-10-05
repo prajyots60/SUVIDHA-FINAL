@@ -23,6 +23,8 @@ import { useUserStore } from "./stores/useUserStore.js";
 import LoadingSpinner from "./components/LoadingSpinner.jsx";
 import AdminPage from "./pages/AdminPage.jsx";
 import ProfilePage from "./pages/ProfilePage.jsx";
+import VendorsByCategory from "./components/VendorsByCategory.jsx";
+import ServicesPage from "./pages/ServicesPage.jsx";
 
 function App() {
   const { user, checkAuth, checkingAuth } = useUserStore();
@@ -77,7 +79,9 @@ function App() {
               {/* Profile route for authenticated users */}
             <Route path="/profile" element={user ? <ProfilePage /> : <Navigate to='/' />} />
 
-            <Route path="/services" element={<VendorList />} />
+            <Route path="/services" element={<ServicesPage />} />
+
+            <Route path="/category/:category" element={<VendorsByCategory />} />
 
             {/* Authentication routes */}
             <Route path='/signup' element={!user ? <SignUpPage /> : <Navigate to='/' />} />

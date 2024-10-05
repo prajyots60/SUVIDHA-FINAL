@@ -147,3 +147,23 @@ export const deleteVendor = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+export const getVendorsByCategory = async (req, res) => {
+  const { category } = req.params;  // Extract category from request parameters
+  try {
+    // Find vendors matching the given category
+    const vendors = await Vendor.find({ category });
+
+    // Check if any vendors are found for the category
+    if (vendors.length === 0) {
+      return res.status(404).json({ message: "No vendors found for this category" });
+    }
+
+    // Return the vendors if found
+    res.status(200).json({vendors});
+  } catch (error) {
+    console.error("Error in getVendorsByCategory controller", error.message);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};

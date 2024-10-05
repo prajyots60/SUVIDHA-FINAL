@@ -2,7 +2,7 @@
 
 import { Link } from "react-router-dom";
 
-const VendorCard = ({ id, name, occupation, address, image }) => {
+const VendorCard = ({ id, name, occupation,price, address, image }) => {
   return (
     <div className="bg-gradient-to-br from-purple-500 to-purple-300 p-6 shadow-lg rounded-lg transition-colors duration-300 hover:bg-gradient-to-br hover:from-purple-600 hover:to-purple-400 flex flex-col items-center">
       {/* Profile Image */}
@@ -17,6 +17,8 @@ const VendorCard = ({ id, name, occupation, address, image }) => {
 
       {/* Occupation */}
       <p className="text-gray-100 text-lg italic mt-1">{occupation}</p>
+
+      <p className="text-gray-200 text-sm text-center mt-2"> {price} ₹</p>
 
       {/* Address */}
       <p className="text-gray-200 text-sm text-center mt-2">{address}</p>

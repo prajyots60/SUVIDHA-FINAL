@@ -58,6 +58,7 @@ const VendorList = () => {
                 name={vendor.userId?.name || vendor.name || 'Unnamed Vendor'}
                 occupation={vendor.occupation}
                 address={vendor.address}
+                price={vendor.price || 'N/A'} 
                 image={vendor.profileImage || 'default-image-url.jpg'} // Fallback for profile image
               />
             </motion.div>

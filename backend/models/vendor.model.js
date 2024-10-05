@@ -36,6 +36,10 @@ const vendorSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  price: {
+    type: Number,
+    default: 0,
+  },
 });
 
 // Create the Vendor model

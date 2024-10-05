@@ -15,7 +15,8 @@ const MyProfile = () => {
     location: '',
     description: '',
     category: '',
-    address: '' // Add address to formData
+    address: '',
+    price: '',
   });
 
   useEffect(() => {
@@ -38,7 +39,8 @@ const MyProfile = () => {
             location: matchedVendor.location || '',
             description: matchedVendor.description || '',
             category: matchedVendor.category || '',
-            address: matchedVendor.address || '' // Set address from vendor data
+            address: matchedVendor.address || '',
+            price: matchedVendor.price || '',
           });
         } else {
           setError("Vendor not found.");
@@ -135,6 +137,18 @@ const MyProfile = () => {
             onChange={handleInputChange}
             className="w-full p-2 rounded-md bg-gray-800 text-gray-300"
             disabled={!isEditing}
+          />
+        </div>
+        <div className="mt-1">
+          <label className="block text-gray-300">Price:</label> {/* Price field */}
+          <input
+            type="text"
+            name="price"
+            value={formData.price}
+            onChange={handleInputChange}
+            className="w-full p-2 rounded-md bg-gray-800 text-gray-300"
+            disabled={!isEditing}
+            required
           />
         </div>
         <div className="mt-1">

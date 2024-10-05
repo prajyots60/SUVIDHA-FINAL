@@ -6,7 +6,8 @@ import {
   getVendorById,
   updateVendor,
   deleteVendor,
-  getVendorByUserId
+  getVendorByUserId,
+  getVendorsByCategory
 } from "../controllers/vendor.controller.js";
 import { get } from "mongoose";
 
@@ -31,6 +32,8 @@ router.get('/:id', getVendorById);
 
 // Get a vendor by user ID
 router.get('/:userId', getVendorByUserId);
+
+router.get("/category/:category", getVendorsByCategory);
 
 // Delete a vendor by ID
 router.delete('/:id', deleteVendor);

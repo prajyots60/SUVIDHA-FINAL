@@ -23,6 +23,18 @@ export const getVendorById = (id) => axiosInstance.get(`${API_URL}/${id}`);
 
 export const getUserById = (userId) => axiosInstance.get(`/users/${userId}`);
 
+// Fetch a vendor by category
+export const fetchVendorsByCategory = async (category) => {
+  try {
+    const response = await axiosInstance.get(`${API_URL}/category/${category}`); // Correct endpoint
+    return response; // Return fetched data
+  } catch (error) {
+    console.error('Error fetching vendors by category:', error);
+    throw error; // Re-throw for error handling
+  }
+};
+
+
 // Create a new vendor
 export const createVendor = (vendorData) => axiosInstance.post(`${API_URL}`, vendorData);
 // export const createVendor = async (vendorData) => {

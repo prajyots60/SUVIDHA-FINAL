@@ -10,6 +10,7 @@ const AddVendor = () => {
     description: '',
     location: '',
     category: '',
+    price: '',
   });
 
   const [profileImage, setProfileImage] = useState(null);
@@ -65,7 +66,7 @@ const AddVendor = () => {
       return;
     }
 
-    if (!formData.address.trim() || !formData.occupation.trim() || !formData.location.trim() || !formData.category.trim()) {
+    if (!formData.address.trim() || !formData.occupation.trim() || !formData.location.trim() || !formData.category.trim() ||  !formData.price.trim()) {
       setError("Please fill out all required fields.");
       return;
     }
@@ -106,6 +107,7 @@ const AddVendor = () => {
       description: '',
       location: '',
       category: '',
+      price: '',
     });
     setProfileImage(null);
     setGalleryImages([]);
@@ -185,6 +187,21 @@ const AddVendor = () => {
             type="text"
             name="location"
             value={formData.location}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border bg-gray-600 border-gray-300 rounded-lg focus:outline-none focus:border-purple-500"
+            required
+          />
+        </div>
+
+        {/* Price Field */}
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="price">
+            Price
+          </label>
+          <input
+            type="number"
+            name="price"
+            value={formData.price}
             onChange={handleChange}
             className="w-full px-4 py-2 border bg-gray-600 border-gray-300 rounded-lg focus:outline-none focus:border-purple-500"
             required

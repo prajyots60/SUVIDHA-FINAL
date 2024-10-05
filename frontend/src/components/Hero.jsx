@@ -1,15 +1,21 @@
+/* eslint-disable no-unused-vars */
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import heroImage from '../assets/images/hero_bg.jpg'; // Update the path as needed
 
 const Hero = () => {
   const [location, setLocation] = useState('');
-  // eslint-disable-next-line no-unused-vars
   const [serviceProvider, setServiceProvider] = useState('');
   const [serviceType, setServiceType] = useState('');
+  const navigate = useNavigate(); // Initialize the navigate function
 
   const handleSearch = () => {
-    // Implement search functionality here
-    console.log('Searching for:', { location, serviceProvider, serviceType });
+    // Navigate to the VendorsByCategory component with the selected service type
+    if (serviceType) {
+      navigate(`/category/${serviceType}`); // Change the route based on your setup
+    } else {
+      console.log('Please select a service type.');
+    }
   };
 
   return (
@@ -35,8 +41,6 @@ const Hero = () => {
             onChange={(e) => setLocation(e.target.value)}
             className="border p-2 rounded-full w-full md:w-1/3 text-sm focus:outline-none focus:ring-2 text-gray-700 focus:ring-purple-600"
           />
-          
-          
           
           {/* Type of Service Dropdown */}
           <select
