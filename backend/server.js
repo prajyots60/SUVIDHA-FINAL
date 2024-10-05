@@ -25,6 +25,8 @@ app.use(cors({
 
 app.use(express.json()); // Parse JSON data in request body
 
+const __dirname = path.resolve();
+
 // API routes
 app.use("/api/auth", authRoutes);
 app.use("/api/vendors", vendorRoutes);
