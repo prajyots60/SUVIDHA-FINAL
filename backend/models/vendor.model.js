@@ -37,8 +37,8 @@ const vendorSchema = new mongoose.Schema({
     required: true,
   },
   price: {
-    type: Number,
-    default: 0,
+    type: String,
+    default: "0",
   },
 });
 

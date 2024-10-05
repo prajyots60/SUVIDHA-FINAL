@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useRef, useState, useEffect } from 'react';
 import { createVendor } from '../api'; // API function to submit form data
 import { useNavigate } from 'react-router-dom';
@@ -90,7 +91,7 @@ const AddVendor = () => {
 
       await axios.patch(`/auth/${userId}/role`, { role: 'admin' });
 
-      navigate(`/vendors/${vendorId}`);
+      navigate(`/secret-dashboard`);
       resetForm();
     } catch (error) {
       setError('Failed to create vendor. Please try again.');

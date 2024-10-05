@@ -83,6 +83,7 @@ const VendorsByCategory = () => {
                 id={vendor._id}
                 name={vendor.userId?.name || vendor.name || 'Unnamed Vendor'}
                 occupation={vendor.occupation}
+                price={vendor.price}
                 address={vendor.address}
                 image={vendor.profileImage || 'default-image-url.jpg'} // Fallback for profile image
               />

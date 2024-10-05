@@ -25,6 +25,7 @@ import AdminPage from "./pages/AdminPage.jsx";
 import ProfilePage from "./pages/ProfilePage.jsx";
 import VendorsByCategory from "./components/VendorsByCategory.jsx";
 import ServicesPage from "./pages/ServicesPage.jsx";
+import ContactUs from "./pages/ContactUsPage.jsx";
 
 function App() {
   const { user, checkAuth, checkingAuth } = useUserStore();
@@ -80,6 +81,8 @@ function App() {
             <Route path="/profile" element={user ? <ProfilePage /> : <Navigate to='/' />} />
 
             <Route path="/services" element={<ServicesPage />} />
+
+            <Route path="/contact-us" element={<ContactUs />} />
 
             <Route path="/category/:category" element={<VendorsByCategory />} />
 

@@ -25,7 +25,7 @@ const Navbar = () => {
             Services
           </Link>
 
-          <Link to="/contact" className="text-white hover:text-purple-300 px-3 py-2 transition duration-300 ease-in-out">
+          <Link to="/contact-us" className="text-white hover:text-purple-300 px-3 py-2 transition duration-300 ease-in-out">
             Contact Us
           </Link>
         </div>

@@ -39,6 +39,7 @@ export const createVendor = async (req, res) => {
     description,
     category,
     location,
+    price,
   } = req.body;
 
   // Validate that userId is present
@@ -64,6 +65,7 @@ export const createVendor = async (req, res) => {
       galleryImages: galleryImageUrls,
       category,
       location,
+      price
     });
 
     await newVendor.save();
@@ -153,7 +155,7 @@ export const getVendorsByCategory = async (req, res) => {
   const { category } = req.params;  // Extract category from request parameters
   try {
     // Find vendors matching the given category
-    const vendors = await Vendor.find({ category });
+    const vendors = await Vendor.find({ category }).populate('userId', 'name email');
 
     // Check if any vendors are found for the category
     if (vendors.length === 0) {
