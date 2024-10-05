@@ -11,7 +11,7 @@ import { useEffect } from "react";
 import Home from './pages/Home';
 import AddVendor from './pages/AddVendor';
 // import EditVendor from './pages/EditVendor';
-import VendorProfile from './pages/VendorProfile';
+import BookingPage from './pages/BookingPage';
 import VendorList from "./components/VendorList";
 
 // Import Auth pages
@@ -71,11 +71,13 @@ function App() {
             <Route path="/vendor-management" element={<Home />} />
             <Route path="/add-vendor" element={<AddVendor />} />
             {/* <Route path="/edit-vendor/:id" element={<EditVendor />} /> */}
-            <Route path="/vendor/:id" element={<VendorProfile />} />
+            <Route path="/vendor/:id" element={<BookingPage />} />
             <Route path="/secret-dashboard" element= {user?.role === "admin" ? <AdminPage /> : <Navigate to='/' />} />
 
               {/* Profile route for authenticated users */}
-              <Route path="/profile" element={user ? <ProfilePage /> : <Navigate to='/' />} />
+            <Route path="/profile" element={user ? <ProfilePage /> : <Navigate to='/' />} />
+
+            <Route path="/services" element={<VendorList />} />
 
             {/* Authentication routes */}
             <Route path='/signup' element={!user ? <SignUpPage /> : <Navigate to='/' />} />

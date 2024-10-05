@@ -2,7 +2,7 @@
 
 const Footer = () => {
   return (
-    <footer className="py-8 bg-gray-200 text-center">
+    <footer className="py-8 bg-[radial-gradient(ellipse_at_top,rgba(128,0,128,0.5)_0%,rgba(75,0,130,0.4)_50%,rgba(0,0,0,0.3)_100%)] text-center">
       <div className="container mx-auto">
         <h2 className="text-2xl font-bold text-purple-600">Suvidha</h2>
         <div className="flex justify-center mt-4 space-x-8">
