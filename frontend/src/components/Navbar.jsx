@@ -20,14 +20,13 @@ const Navbar = () => {
   const isAdmin = user?.role === "admin";
   const isCustomer = user?.role === "customer";
   
-  const [isOpen, setIsOpen] = useState(false); // State to handle the menu toggle
-  const location = useLocation(); // To handle active link highlighting
+  const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
 
-  // Close menu when route changes
   useEffect(() => {
     setIsOpen(false);
   }, [location.pathname]);
@@ -35,10 +34,44 @@ const Navbar = () => {
   return (
     <nav className="fixed top-0 left-0 w-full bg-[radial-gradient(ellipse_at_top,rgba(128,0,128,0.5)_0%,rgba(75,0,130,0.4)_50%,rgba(0,0,0,0.3)_100%)] shadow-md z-50">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-        {/* Branding */}
-        <Link to="/" className="text-2xl font-bold text-white">
-          Suvidha
-        </Link>
+        {/* Branding and Desktop Links */}
+        <div className="flex items-center space-x-6">
+          <Link to="/" className="text-2xl font-bold text-white">
+            Suvidha
+          </Link>
+
+          <div className="hidden md:flex md:items-center md:space-x-6">
+            <Link
+              to="/"
+              className={`flex items-center text-white hover:text-purple-300 transition-colors duration-300 ${
+                location.pathname === "/" ? "text-purple-300" : ""
+              }`}
+            >
+              <Home className="mr-1" size={18} />
+              Home
+            </Link>
+
+            <Link
+              to="/services"
+              className={`flex items-center text-white hover:text-purple-300 transition-colors duration-300 ${
+                location.pathname === "/services" ? "text-purple-300" : ""
+              }`}
+            >
+              <Settings className="mr-1" size={18} />
+              Services
+            </Link>
+
+            <Link
+              to="/contact-us"
+              className={`flex items-center text-white hover:text-purple-300 transition-colors duration-300 ${
+                location.pathname === "/contact-us" ? "text-purple-300" : ""
+              }`}
+            >
+              <Mail className="mr-1" size={18} />
+              Contact Us
+            </Link>
+          </div>
+        </div>
 
         {/* Menu Toggle for Mobile */}
         <div className="md:hidden">
@@ -52,38 +85,8 @@ const Navbar = () => {
           </button>
         </div>
 
-        {/* Desktop Links */}
+        {/* User Links */}
         <div className="hidden md:flex md:items-center md:space-x-6">
-          <Link
-            to="/"
-            className={`flex items-center text-white hover:text-purple-300 transition-colors duration-300 ${
-              location.pathname === "/" ? "text-purple-300" : ""
-            }`}
-          >
-            <Home className="mr-1" size={18} />
-            Home
-          </Link>
-
-          <Link
-            to="/services"
-            className={`flex items-center text-white hover:text-purple-300 transition-colors duration-300 ${
-              location.pathname === "/services" ? "text-purple-300" : ""
-            }`}
-          >
-            <Settings className="mr-1" size={18} />
-            Services
-          </Link>
-
-          <Link
-            to="/contact-us"
-            className={`flex items-center text-white hover:text-purple-300 transition-colors duration-300 ${
-              location.pathname === "/contact-us" ? "text-purple-300" : ""
-            }`}
-          >
-            <Mail className="mr-1" size={18} />
-            Contact Us
-          </Link>
-
           {isAdmin && (
             <Link
               to="/secret-dashboard"
@@ -100,7 +103,7 @@ const Navbar = () => {
               className="flex items-center text-white hover:text-purple-300 transition-colors duration-300 relative group"
             >
               <Briefcase className="mr-1" size={18} />
-              Register as Vendor
+              Become a Vendor
             </Link>
           )}
 
@@ -148,7 +151,6 @@ const Navbar = () => {
       </div>
 
       {/* Mobile Sidebar Menu */}
-      {/* Overlay */}
       {isOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40"
