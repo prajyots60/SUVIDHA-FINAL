@@ -7,6 +7,7 @@ import { connectDB } from './lib/db.js';
 import authRoutes from "./routes/auth.route.js";
 import vendorRoutes from "./routes/vendor.route.js";
 import bookingRoutes from "./routes/booking.route.js";
+import userRoutes from "./routes/user.route.js";
 import Vendor from './models/vendor.model.js'; // Import the Vendor model
 
 dotenv.config();
@@ -25,6 +26,7 @@ app.use(express.json()); // Parse JSON data in request body
 app.use("/api/auth", authRoutes);
 app.use("/api/vendors", vendorRoutes);
 app.use("/api/bookings", bookingRoutes);
+app.use('/api/users', userRoutes);
 
 // Function to drop the email index on the vendors collection
 const dropEmailIndex = async () => {

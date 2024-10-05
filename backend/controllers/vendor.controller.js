@@ -47,7 +47,11 @@ export const createVendor = async (req, res) => {
   }
 
   try {
-    const profileImageUrl = req.file ? req.file.path : null; // Single image upload for profile
+    // const profileImageUrl = req.file ? req.file.path : null;
+     // Single image upload for profile
+     console.log("request file",req.file)
+     console.log("request files", req.files)
+    const profileImageUrl = req.files['image'] ? req.files['image'].map(file => file.path)[0] : null
     const galleryImageUrls = req.files['gallery'] ? req.files['gallery'].map(file => file.path) : []; // Handling multiple gallery images
 
     // Create a new Vendor instance
@@ -76,7 +80,7 @@ export const createVendor = async (req, res) => {
 // Get all vendors
 export const getVendors = async (req, res) => {
   try {
-    const vendors = await Vendor.find();
+    const vendors = await Vendor.find().populate('userId', 'name email'); // Populate userId with name and email
     res.status(200).json(vendors);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -95,6 +99,20 @@ export const getVendorById = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// Get a single vendor by userId
+export const getVendorByUserId = async (req, res) => {
+  try {
+    const { userId } = req.query;  // Expecting userId from query params
+    const vendor = await Vendor.findOne({ userId: userId });
+    if (!vendor) return res.status(404).json({ message: "Vendor not found" });
+    res.status(200).json(vendor);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 
 // Update vendor by ID
 export const updateVendor = async (req, res) => {

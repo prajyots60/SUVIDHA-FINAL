@@ -1,5 +1,5 @@
 // src/api.js
-import axiosInstance from './lib/axios'; // Adjust the import path as necessary
+import axiosInstance from './lib/axios.js'; // Adjust the import path as necessary
 
 const API_URL = '/vendors'; // Updated to plural form for collections
 
@@ -20,6 +20,8 @@ export const getVendorByUserId = async (userId) => {
 // Fetch a vendor by ID
 
 export const getVendorById = (id) => axiosInstance.get(`${API_URL}/${id}`);
+
+export const getUserById = (userId) => axiosInstance.get(`/users/${userId}`);
 
 // Create a new vendor
 export const createVendor = (vendorData) => axiosInstance.post(`${API_URL}`, vendorData);
