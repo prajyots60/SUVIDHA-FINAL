@@ -1,5 +1,5 @@
 
-/* eslint-disable no-unused-vars */
+
 import {create} from "zustand";
 import axios from "../lib/axios.js";
 import {toast} from "react-hot-toast";
@@ -74,22 +74,7 @@ export const useUserStore = create((set, get) => ({
     }
   },
 
-  // updateUser: async (id, { name, email }) => {
-  //   try {
-  //     const res = await axios.put(`/auth/profile/${id}`, { name, email });
-  //     set((state) => ({
-  //       user: { ...state.user, name: res.data.name, email: res.data.email },
-  //     }));
-  //     toast.success("Profile updated successfully!");
-  //     return true; // Indicate success
-  //   } catch (error) {
-  //     console.log("Error updating profile", error.response.data);
-  //     toast.error(error.response.data.message || "An error occurred while updating profile");
-  //     return false; // Indicate failure
-  //   }
-  // },
-
-  updateUser: async (data) => {
+    updateUser: async (data) => {
     try {
       const res = await axios.patch('/auth/update', data); // Update route
       // Ensure set is called with a function that takes state
@@ -120,9 +105,23 @@ export const useUserStore = create((set, get) => ({
       return false; // Indicate failure
     }
   },
+
+  refreshToken: async () => {
+		// Prevent multiple simultaneous refresh attempts
+		if (get().checkingAuth) return;
+
+		set({ checkingAuth: true });
+		try {
+			const response = await axios.post("/auth/refresh-token");
+			set({ checkingAuth: false });
+			return response.data;
+		} catch (error) {
+			set({ user: null, checkingAuth: false });
+			throw error;
+		}
+	},
   
 }));
-
 
 
 let refreshPromise = null;
