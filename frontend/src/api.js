@@ -50,3 +50,6 @@ export const updateVendor = (id, vendorData) => axiosInstance.put(`${API_URL}/${
 
 // Delete a vendor by ID
 export const deleteVendor = (id) => axiosInstance.delete(`${API_URL}/${id}`);
+
+
+

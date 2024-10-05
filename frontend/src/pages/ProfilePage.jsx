@@ -2,8 +2,9 @@ import { UserCircle, List } from "lucide-react"; // Icons for tabs
 import { useState } from "react";
 import { motion } from "framer-motion";
 import UserProfile from "../components/UserProfile"; // Import your MyProfile component
-import OrdersList from "../components/OrdersList"; // Import your OrdersList component
+
 import { useUserStore } from "../stores/useUserStore"; // Import the user store
+import BookingList from "../components/BookingList";
 
 const tabs = [
   { id: "profile", label: "My Profile", icon: UserCircle },
@@ -58,8 +59,8 @@ const ProfilePage = () => {
 
         {/* Conditional Rendering Based on Active Tab */}
         {activeTab === "profile" && <UserProfile id={user._id} />}
-        {activeTab === "orders" && <OrdersList userId={user._id} />}
-         {/* Pass userId to OrdersList */}
+        {activeTab === "orders" && <BookingList  />}
+         
       </div>
     </div>
   );
