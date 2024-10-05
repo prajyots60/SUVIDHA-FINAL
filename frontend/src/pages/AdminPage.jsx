@@ -5,6 +5,7 @@ import UserList from "../components/UserList";
 import MyProfile from "../components/MyProfile";
 import AnalyticsTab from "../components/AnalyticsTab";
 import { useUserStore } from "../stores/useUserStore"; // Import the user store
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const tabs = [
   { id: "profile", label: "My Profile", icon: UserCircle },
@@ -17,7 +18,7 @@ const AdminPage = () => {
   const { user } = useUserStore(); // Retrieve the current user
 
   if (!user) {
-    return <div>Loading user data...</div>; // Handle loading state
+    return <div>Loading user data... <LoadingSpinner/></div>; // Handle loading spinner above text
   }
 
   const handleTabClick = (tabId) => {
