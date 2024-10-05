@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Trash, Clock, CheckCircle, Mail, XCircle, CheckCircle as ConfirmedIcon } from 'lucide-react';
 import { useBookingStore } from '../stores/useBookingStore';
+import LoadingSpinner from './LoadingSpinner';
 
 const BookingList = () => {
   const { fetchBookings, deleteBooking, bookings, loading, error } = useBookingStore();
@@ -20,7 +21,7 @@ const BookingList = () => {
   }, [fetchBookings]);
 
   if (loading) {
-    return <div>Loading...</div>; // Consider using a spinner here
+    return <div><LoadingSpinner/></div>; // Consider using a spinner here
   }
 
   if (error) {

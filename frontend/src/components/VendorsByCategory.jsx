@@ -33,10 +33,12 @@ const VendorsByCategory = () => {
   }, [category]); // Fetch vendors when the category changes
 
   if (loading) return (
-    <div className="flex justify-center items-center h-screen">
-      <LoadingSpinner />
-      <p className="mt-4 text-lg text-purple-600">Loading vendors, please wait...</p>
-    </div>
+    
+      <div className="flex flex-col justify-center items-center h-screen">
+        <LoadingSpinner />
+        <p className="mt-2 text-lg text-purple-600">Loading vendors, please wait...</p>
+      </div>
+    
   );
 
   return (

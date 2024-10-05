@@ -18,7 +18,13 @@ const AdminPage = () => {
   const { user } = useUserStore(); // Retrieve the current user
 
   if (!user) {
-    return <div>Loading user data... <LoadingSpinner/></div>; // Handle loading spinner above text
+    return (
+      <div className="flex flex-col items-center">
+        <LoadingSpinner />
+        <span className="mt-2">Loading user data...</span>
+      </div>
+    );
+     // Handle loading spinner above text
   }
 
   const handleTabClick = (tabId) => {
