@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import path from "path"; // Import path module
 
 import { connectDB } from './lib/db.js';
 import authRoutes from "./routes/auth.route.js";
@@ -15,14 +16,16 @@ const app = express();
 
 const PORT = process.env.PORT || 5000;
 
+// Middleware setup
 app.use(cookieParser()); // Parse cookies in request headers
 app.use(cors({
-  origin: "http://localhost:5174", // Allow only this origin
+  origin: process.env.NODE_ENV === "production" ? "https://suvidha-final.onrender.com" : "http://localhost:5174", // Update for production
   credentials: true, // Allow cookies to be sent
 }));
 
 app.use(express.json()); // Parse JSON data in request body
 
+// API routes
 app.use("/api/auth", authRoutes);
 app.use("/api/vendors", vendorRoutes);
 app.use("/api/bookings", bookingRoutes);
@@ -48,15 +51,17 @@ const dropEmailIndex = async () => {
   }
 };
 
+// Serve static files from the frontend build in production
 if (process.env.NODE_ENV === "production") {
-	app.use(express.static(path.join(__dirname, "/frontend/dist")));
+  app.use(express.static(path.join(__dirname, "frontend", "dist"))); // Serve static files
 
-	app.get("*", (req, res) => {
-		res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
-	});
+  // Serve the index.html file for all other requests
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
+  });
 }
 
-
+// Start the server
 app.listen(PORT, async () => {
   await connectDB(); // Connect to the database
   await dropEmailIndex(); // Drop the email index before starting the server
