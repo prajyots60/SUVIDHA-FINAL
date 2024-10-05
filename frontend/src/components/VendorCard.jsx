@@ -1,54 +1,33 @@
-// eslint-disable-next-line react/prop-types
-const VendorCard = ({ name, address, image, description, location, category, email }) => {
+/* eslint-disable react/prop-types */
+
+import { Link } from "react-router-dom";
+
+const VendorCard = ({ id, name, occupation, address, image }) => {
   return (
-    <div className="bg-white p-6 shadow-lg rounded transform transition duration-300 hover:scale-105 hover:bg-purple-100 flex">
-      {/* Left Side: Profile Information */}
-      <div className="w-3/4 pr-6">
-        {/* Profile Image */}
-        <img
-          src={image}
-          alt={name}
-          className="rounded-full w-24 h-24 mx-auto border-4 border-purple-400"
-        />
+    <div className="bg-gradient-to-br from-purple-500 to-purple-300 p-6 shadow-lg rounded-lg transition-colors duration-300 hover:bg-gradient-to-br hover:from-purple-600 hover:to-purple-400 flex flex-col items-center">
+      {/* Profile Image */}
+      <img
+        src={image}
+        alt={name}
+        className="rounded-full w-32 h-32 border-4 border-white mb-4 shadow-md"
+      />
 
-        {/* Name */}
-        <h3 className="mt-4 font-bold text-xl text-center text-purple-800">{name}</h3>
+      {/* Name */}
+      <h3 className="font-bold text-2xl text-center text-white">{name}</h3>
 
-        {/* Email */}
-        {email && (
-          <p className="text-gray-700 text-center mt-1">{email}</p>
-        )}
+      {/* Occupation */}
+      <p className="text-gray-100 text-lg italic mt-1">{occupation}</p>
 
-        {/* Description */}
-        {description && (
-          <p className="text-gray-700 text-center mt-2 px-4 italic">{description}</p>
-        )}
+      {/* Address */}
+      <p className="text-gray-200 text-sm text-center mt-2">{address}</p>
 
-        {/* Address */}
-        <p className="text-gray-600 text-center mt-2">{address}</p>
-
-        {/* Book Service Button */}
-        <div className="flex justify-center mt-4">
-          <a
-            href={`/vendors/${name}/book`} // Adjust this link as necessary for your routing
-            className="bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700 transition duration-300"
-          >
-            Book Service
-          </a>
-        </div>
-      </div>
-
-      {/* Right Side: Location and Category */}
-      <div className="w-1/4 pl-6 border-l border-purple-200 text-left">
-        {/* Displaying Location */}
-        <div className="text-gray-600 text-sm mb-4">
-          <span className="font-semibold text-purple-800">Location: </span>{location || "N/A"}
-        </div>
-        
-        {/* Displaying Category */}
-        <div className="text-gray-600 text-sm">
-          <span className="font-semibold text-purple-800">Category: </span>{category || "N/A"}
-        </div>
+      {/* Book Service Button */}
+      <div className="flex justify-center mt-4 w-full">
+        <Link to={`/vendor/${id}`}>
+          <button className="bg-purple-600 text-white px-4 py-2 rounded transition-transform duration-300 hover:bg-purple-700 hover:scale-105">
+            Book Now
+          </button>
+        </Link>
       </div>
     </div>
   );

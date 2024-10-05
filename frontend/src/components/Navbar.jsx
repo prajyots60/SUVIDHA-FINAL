@@ -84,7 +84,7 @@ const Navbar = () => {
             <>
               <Link
                 to="/login"
-                className="mr-4 text-white hover:text-purple-300 transform transition duration-300 hover:scale-110 flex items-center"
+                className="mr-4  text-white hover:text-purple-300 transform transition duration-300 hover:scale-110 flex items-center"
               >
                 <LogIn className="mr-2 text-white" size={18} />
                 Log In

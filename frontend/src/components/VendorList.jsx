@@ -1,11 +1,13 @@
-import { useEffect, useState } from "react";
-import { getVendors } from "../api.js";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from 'react';
+import { getVendors } from '../api.js'; // Update this import based on your project structure
+import VendorCard from './VendorCard'; // Adjust this import based on your project structure
+import LoadingSpinner from './LoadingSpinner.jsx';
+import { motion } from 'framer-motion'; // Importing Framer Motion for animations
 
 const VendorList = () => {
   const [vendors, setVendors] = useState([]);
-  const [loading, setLoading] = useState(true); // State for loading
-  const [error, setError] = useState(null); // State for error handling
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchVendors = async () => {
@@ -15,54 +17,55 @@ const VendorList = () => {
         setVendors(response.data);
       } catch (error) {
         console.error("Error fetching vendors:", error);
-        setError("Failed to load vendors. Please try again later."); // Set error message
+        setError("Failed to load vendors. Please try again later.");
       } finally {
-        setLoading(false); // Set loading to false once fetch is complete
+        setLoading(false);
       }
     };
     fetchVendors();
   }, []);
 
-  if (loading) return <p>Loading vendors...</p>; // Loading state
+  if (loading) return <p><LoadingSpinner /></p>;
+  if (error) return <p className="text-red-500">{error}</p>;
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h2 className="text-3xl font-bold mb-6">Vendors</h2>
-      {error && <p className="text-red-500">{error}</p>} {/* Display error message */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Centered animated heading */}
+      <motion.h2
+        className="text-4xl font-bold mb-8 text-purple-600 text-center"
+        initial={{ y: -50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        Our Trusted Vendors
+      </motion.h2>
+
+      <motion.div
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
         {Array.isArray(vendors) && vendors.length > 0 ? (
           vendors.map((vendor) => (
-            <div key={vendor._id} className="bg-white shadow-md rounded-lg p-6">
-              <img
-                src={vendor.image}
-                alt={vendor.name}
-                className="w-full h-48 object-cover rounded-md mb-4"
+            <motion.div
+              key={vendor._id}
+              className="transition-transform transform hover:scale-100" // Adjusted scale on hover
+              whileHover={{ scale: 1.02 }} // Slight hover effect
+            >
+              <VendorCard
+                id={vendor._id}
+                name={vendor.userId?.name || vendor.name || 'Unnamed Vendor'}
+                occupation={vendor.occupation}
+                address={vendor.address}
+                image={vendor.profileImage || 'default-image-url.jpg'} // Fallback for profile image
               />
-              <h3 className="text-xl font-semibold mb-2">{vendor.name}</h3>
-              <p className="text-gray-700"><strong>Occupation:</strong> {vendor.occupation}</p>
-              <p className="text-gray-700"><strong>Address:</strong> {vendor.address}</p>
-              {vendor.description && ( // Display description if it exists
-                <p className="text-gray-700"><strong>Description:</strong> {vendor.description}</p>
-              )}
-              {vendor.location && ( // Display location if it exists
-                <p className="text-gray-700"><strong>Location:</strong> {vendor.location}</p>
-              )}
-              {vendor.category && ( // Display category if it exists
-                <p className="text-gray-700"><strong>Category:</strong> {vendor.category}</p>
-              )}
-              <div className="mt-4">
-                <Link to={`/vendor/${vendor._id}`}>
-                  <button className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
-                    Book Now
-                  </button>
-                </Link>
-              </div>
-            </div>
+            </motion.div>
           ))
         ) : (
-          <div>No vendors available.</div>
+          <div className="text-center text-gray-500">No vendors available.</div>
         )}
-      </div>
+      </motion.div>
     </div>
   );
 };
