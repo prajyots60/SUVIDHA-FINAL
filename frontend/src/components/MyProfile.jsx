@@ -1,13 +1,22 @@
 import { useEffect, useState } from "react";
-import { useUserStore } from "../stores/useUserStore.js"; // Adjust the import path as necessary
-import { getVendorByUserId } from "../api.js"; // Adjust the import path as necessary
-import LoadingSpinner from "./LoadingSpinner"; // Optional loading spinner
+import { useUserStore } from "../stores/useUserStore.js";
+import { getVendorByUserId, updateVendor } from "../api.js"; // Ensure you have updateVendor in your API
+import LoadingSpinner from "./LoadingSpinner";
+import toast from 'react-hot-toast'; // For notifications
 
 const MyProfile = () => {
-  const { user } = useUserStore(); // Get user state from zustand store
+  const { user } = useUserStore();
   const [vendor, setVendor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isEditing, setIsEditing] = useState(false); // State for editing mode
+  const [formData, setFormData] = useState({
+    occupation: '',
+    location: '',
+    description: '',
+    category: '',
+    address: '' // Add address to formData
+  });
 
   useEffect(() => {
     const fetchVendor = async () => {
@@ -18,24 +27,25 @@ const MyProfile = () => {
       }
 
       try {
-        const userId = user._id; // Access user ID from the store
-        console.log("Fetching vendor for user ID:", userId); // Debugging log
+        const userId = user._id;
         const response = await getVendorByUserId(userId);
-
-        // Log the full response from the API to inspect its structure
-        console.log("Vendor response:", response);
-
-        // Find vendor matching userId
-        const matchedVendor = response.data.find(vendor => vendor.userId === userId);
+        const matchedVendor = response.data.find(vendor => vendor.userId._id === userId);
 
         if (matchedVendor) {
           setVendor(matchedVendor);
+          setFormData({
+            occupation: matchedVendor.occupation || '',
+            location: matchedVendor.location || '',
+            description: matchedVendor.description || '',
+            category: matchedVendor.category || '',
+            address: matchedVendor.address || '' // Set address from vendor data
+          });
         } else {
           setError("Vendor not found.");
         }
 
       } catch (err) {
-        console.error("Error fetching vendor:", err);
+        console.error(err);
         setError("Failed to fetch vendor profile.");
       } finally {
         setLoading(false);
@@ -45,59 +55,155 @@ const MyProfile = () => {
     fetchVendor();
   }, [user]);
 
-  if (loading) return <LoadingSpinner />; // Show a loading spinner while data is being fetched
-  if (error) return <div>{error}</div>; // Show error message if something goes wrong
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value
+    }));
+  };
+
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    const vendorId = vendor._id; // Get the vendor ID from the vendor state
+    const success = await updateVendor(vendorId, formData); // Use vendorId for update
+
+    if (success) {
+      toast.success("Vendor profile updated successfully!");
+      setIsEditing(false); // Exit editing mode
+      setVendor((prevVendor) => ({
+        ...prevVendor,
+        ...formData
+      }));
+    } else {
+      toast.error("Failed to update vendor profile. Please try again.");
+    }
+  };
+
+  if (loading) return <LoadingSpinner />;
+  if (error) return <div className="text-red-500 text-center">{error}</div>;
 
   return (
-    <div className="bg-gray-800 p-4 rounded-lg">
-      <h2 className="text-2xl font-bold text-emerald-400">Vendor Profile</h2>
-      <div className="mt-4">
-        {/* Display profile image or fallback if missing */}
+    <div className="bg-gray-800 p-6 rounded-lg shadow-lg max-w-2xl mx-auto">
+      <h2 className="text-3xl font-bold text-purple-600 mb-4 text-center">Vendor Profile</h2>
+      
+      <div className="flex items-center justify-center mb-6">
         {vendor?.profileImage ? (
           <img
             src={vendor.profileImage}
-            alt={`${user?.name}'s profile`} // Use user's name here
-            className="w-32 h-32 rounded-full mb-4"
+            alt={`${user?.name}'s profile`}
+            className="w-32 h-32 rounded-full border-4 border-purple-600 shadow-lg"
           />
         ) : (
-          <div className="w-32 h-32 rounded-full bg-gray-300 mb-4" />
+          <div className="w-32 h-32 rounded-full bg-gray-300 border-4 border-purple-600 shadow-lg" />
         )}
+      </div>
 
-        {/* Display user name (from user object) */}
-        <h3 className="text-xl font-semibold">{user?.name || "No name provided"}</h3>
+      <h3 className="text-xl font-semibold text-center">{user?.name || "No name provided"}</h3>
+      <p className="text-center text-gray-300"><strong>Email:</strong> {user?.email || "No email provided"}</p>
 
-        {/* Display email (from user object) */}
-        <p><strong>Email:</strong> {user?.email || "No email provided"}</p>
+      <form onSubmit={handleUpdate} className="mt-4 p-4 bg-gray-700 rounded-lg shadow-md">
+        <h4 className="text-lg font-bold text-purple-500">About Vendor</h4>
+        <div className="mt-1">
+          <label className="block text-gray-300">Occupation:</label>
+          <input
+            type="text"
+            name="occupation"
+            value={formData.occupation}
+            onChange={handleInputChange}
+            className="w-full p-2 rounded-md bg-gray-800 text-gray-300"
+            disabled={!isEditing}
+          />
+        </div>
+        <div className="mt-1">
+          <label className="block text-gray-300">Location:</label>
+          <input
+            type="text"
+            name="location"
+            value={formData.location}
+            onChange={handleInputChange}
+            className="w-full p-2 rounded-md bg-gray-800 text-gray-300"
+            disabled={!isEditing}
+          />
+        </div>
+        <div className="mt-1">
+          <label className="block text-gray-300">Address:</label> {/* Address field */}
+          <input
+            type="text"
+            name="address"
+            value={formData.address}
+            onChange={handleInputChange}
+            className="w-full p-2 rounded-md bg-gray-800 text-gray-300"
+            disabled={!isEditing}
+          />
+        </div>
+        <div className="mt-1">
+          <label className="block text-gray-300">Description:</label>
+          <textarea
+            name="description"
+            value={formData.description}
+            onChange={handleInputChange}
+            className="w-full p-2 rounded-md bg-gray-800 text-gray-300"
+            disabled={!isEditing}
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="category">
+            Category
+          </label>
+          <select
+            name="category"
+            value={formData.category}
+            onChange={handleInputChange} // Use handleInputChange to update state
+            className="w-full px-4 py-2 border bg-gray-700 border-gray-300 rounded-lg focus:outline-none focus:border-purple-500"
+            required
+          >
+            <option value="" disabled>
+              Select a category
+            </option>
+            <option value="cleaning">Cleaning</option>
+            <option value="repair">Repair</option>
+            <option value="painting">Painting</option>
+            <option value="shifting">Shifting</option>
+            <option value="plumber">Plumber</option>
+            <option value="electric">Electrician</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
 
-        {/* Display occupation */}
-        <p><strong>Occupation:</strong> {vendor?.occupation || "No occupation provided"}</p>
+        <div className="flex justify-between mt-4">
+          <button 
+            type="button" 
+            onClick={() => setIsEditing(prev => !prev)} 
+            className="bg-purple-600 text-white px-4 py-2 rounded-md"
+          >
+            {isEditing ? 'Cancel' : 'Edit'}
+          </button>
+          
+          {isEditing && (
+            <button type="submit" className="bg-purple-600 text-white px-4 py-2 rounded-md">
+              Save Changes
+            </button>
+          )}
+        </div>
+      </form>
 
-        {/* Display location */}
-        <p><strong>Location:</strong> {vendor?.location || "No location provided"}</p>
-
-        {/* Display description */}
-        <p><strong>About:</strong> {vendor?.description || "No description provided"}</p>
-
-        {/* Display category */}
-        <p><strong>Category:</strong> {vendor?.category || "No category provided"}</p>
-
-        {/* Display gallery images */}
-        <div className="mt-4">
-          <h4 className="text-lg font-semibold">Gallery</h4>
-          <div className="grid grid-cols-3 gap-4">
-            {vendor?.galleryImages?.length > 0 ? (
-              vendor.galleryImages.map((image, index) => (
+      <div className="mt-6">
+        <h4 className="text-lg font-semibold text-purple-500">Gallery</h4>
+        <div className="grid grid-cols-3 gap-4 mt-2">
+          {vendor?.galleryImages?.length > 0 ? (
+            vendor.galleryImages.map((image, index) => (
+              <div key={index} className="w-full h-40 overflow-hidden rounded-lg shadow-md">
                 <img
-                  key={index}
                   src={image}
                   alt={`Gallery image ${index + 1}`}
-                  className="w-full h-auto rounded-lg"
+                  className="w-full h-full object-cover transition-transform transform hover:scale-105"
                 />
-              ))
-            ) : (
-              <p>No gallery images available</p>
-            )}
-          </div>
+              </div>
+            ))
+          ) : (
+            <p className="text-center text-gray-400">No gallery images available</p>
+          )}
         </div>
       </div>
     </div>
