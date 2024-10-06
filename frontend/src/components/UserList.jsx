@@ -65,6 +65,8 @@ const UserList = () => {
     setStatusUpdating(bookingId);
     try {
       await updateBookingStatus(bookingId, newStatus);
+
+      fetchVendorBookings();
   
       // Update the booking status in the local state
       const updatedBookings = bookings.map((booking) => {
