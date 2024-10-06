@@ -48,5 +48,38 @@ export const useBookingStore = create((set) => ({
       console.error('Error deleting booking:', error);
     }
   },
+
+
+  updateBookingStatus: async (bookingId, newStatus) => {
+    console.log('Updating booking with ID:', bookingId, 'to status:', newStatus);
+    set({ loading: true });
+    try {
+      const response = await axiosInstance.put(`/bookings/${bookingId}/status`, { status: newStatus });
+      set((state) => ({
+        bookings: state.bookings.map((booking) =>
+          booking._id === bookingId ? { ...booking, status: response.data.status } : booking
+        ),
+        loading: false,
+      }));
+    } catch (error) {
+      set({ error: error.response?.data || error.message, loading: false });
+      console.error('Error updating booking status:', error);
+    }
+  },
+
+  fetchVendorBookings: async () => {
+    set({ loading: true, error: null });
+    try {
+      // Fetching bookings for the current vendor (no need for vendorId as it's fetched based on userId)
+      const response = await axiosInstance.get('/bookings/vendor-bookings');
+
+      console.log('Fetched Bookings:', response.data);
+      
+      set({ bookings: response.data, loading: false });
+    } catch (error) {
+      set({ error: error.response?.data || error.message, loading: false });
+      console.error('Error fetching bookings:', error);
+    }
+  },
   
 }));

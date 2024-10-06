@@ -136,3 +136,80 @@ export const getUserBookings = async (req, res) => {
   }
 };
 
+// Controller to fetch bookings based on logged-in user
+export const fetchVendorBookings = async (req, res) => {
+  try {
+    const userId = req.user._id; // Ensure this is populated correctly
+
+    // Find the vendorId associated with the userId
+    const vendor = await Vendor.findOne({ userId });
+    if (!vendor) {
+      return res.status(404).json({ message: 'Vendor not found' });
+    }
+
+    // Fetch bookings related to this vendorId and populate the user details
+    const bookings = await Booking.find({ vendorId: vendor._id })
+      .populate({
+        path: 'userId', // Populate user details from the booking
+        model: 'User',  // Specify the User model to avoid errors
+        select: 'id name email' // Select the name and email fields from the user
+      })
+      .select('id status preferredTime serviceDate userId createdAt'); // Select booking fields
+
+    // If no bookings are found
+    if (!bookings || bookings.length === 0) {
+      return res.status(404).json({ message: 'No bookings found for this vendor' });
+    }
+
+    // Map through bookings to send structured data
+    const vendorBookings = bookings.map((booking) => ({
+      id: booking.id,
+      userId: booking.userId?.id,
+      status: booking.status,
+      preferredTime: booking.preferredTime,
+      serviceDate: booking.serviceDate,
+      createdAt: booking.createdAt,
+      user: {
+        id: booking.userId?.id,
+        name: booking.userId?.name || 'Unknown User', // User's name
+        email: booking.userId?.email || 'Unknown Email' // User's email
+      }
+    }));
+
+    // console.log(`Returning vendor bookings: ${JSON.stringify(vendorBookings)}`);
+
+    // Send the response
+    return res.status(200).json(vendorBookings);
+  } catch (error) {
+    console.error('Error fetching vendor bookings:', error);
+    return res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+
+export const updateBookingStatus = async (req , res) => {
+  const {bookingId} = req.params;
+  const {status} = req.body;
+
+  try {
+    const updatedBooking = await Booking.findByIdAndUpdate(
+      bookingId,
+      {status}, // Update the status field
+      // {new: true }   // Return the updated whole document
+      {new: true, select: 'status'}    // Return the updated status only
+    );
+
+    if (!updatedBooking) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+
+    console.log("Updated booking status:", updatedBooking);
+    // res.status(200).json(updatedBooking);
+    res.status(200).json({status: updatedBooking.status});
+  } catch (error) {
+    console.log("Error updating booking status:", error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+}
+
+
