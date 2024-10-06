@@ -52,24 +52,27 @@ const BookingPage = () => {
         setIsModalOpen(false);
     };
 
-    const handleBookingConfirmation = async (userName, serviceDate, preferredTime) => {
+
+    const handleBookingConfirmation = async ({serviceDescription, address, serviceDate, preferredTime}) => {
         try {
             const response = await axiosInstance.post('/bookings', {
-                userId: user._id,
-                vendorId: id,
-                name: userName,
-                serviceDate: serviceDate,
-                preferredTime: preferredTime,
+                userId: user._id,     // User ID from the authenticated user
+                vendorId: id,         // Vendor ID (ensure 'id' is correctly defined in your scope)
+                serviceDescription,    // Service description (make sure this is passed from the modal)
+                address,               // Address (make sure this is passed from the modal)
+                serviceDate: serviceDate, // Service date in the correct format
+                preferredTime: preferredTime, // Preferred time
             });
-
+    
             console.log('Booking confirmed:', response.data);
             toast.success('Booking confirmed!');
-            setIsModalOpen(false);
+            setIsModalOpen(false); // Close the modal on success
         } catch (error) {
             console.error('Failed to create booking:', error.response?.data || error.message);
             toast.error(error.response?.data?.message || 'Failed to create booking');
         }
     };
+    
 
     if (loading) {
         return (

@@ -1,3 +1,5 @@
+
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 // Modal.jsx
 import { useState, useEffect } from 'react';
@@ -17,7 +19,8 @@ const Modal = ({
   handleBookingConfirmation,
 }) => {
   const [selectedTime, setSelectedTime] = useState(null); // Manage time state
-  const [userName, setUserName] = useState(''); // Manage user name state
+  const [serviceDescription, setServiceDescription] = useState(''); // Manage service description state
+  const [address, setAddress] = useState(''); // Manage address state
   const [isSubmitting, setIsSubmitting] = useState(false); // Manage loading state
   const today = new Date(); // Get today's date to restrict past dates
 
@@ -39,31 +42,47 @@ const Modal = ({
 
   // Function to handle booking confirmation
   const onConfirmBooking = async () => {
-    if (!userName.trim() || !selectedDate || !selectedTime) {
+    console.log("Selected Date:", selectedDate);
+  console.log("Selected Time:", selectedTime);
+  console.log("Service Description:", serviceDescription);
+  console.log("Address:", address);
+
+    if (!serviceDescription.trim() || !address.trim() || !selectedDate || !selectedTime) {
       alert('Please fill in all fields.');
       return;
     }
-
+  
     setIsSubmitting(true); // Start loading
 
-    // Format date and time (optional)
-    const formattedDate = format(selectedDate, 'yyyy/MM/dd');
-    const formattedTime = selectedTime; // Adjust formatting as needed
+  
+    // Prepare data
+    const bookingData = {
+      serviceDescription: serviceDescription,
+      address,
+      serviceDate: selectedDate.toISOString(), 
+      preferredTime: selectedTime, 
+    };
 
+    console.log('Booking Data:', bookingData);
+  
     try {
-      await handleBookingConfirmation(userName, formattedDate, formattedTime);
+      await handleBookingConfirmation(bookingData);
       // Optionally, reset form fields after successful booking
-      setUserName('');
+      setServiceDescription('');
+      setAddress('');
       setSelectedDate(null);
       setSelectedTime(null);
       closeModal();
     } catch (error) {
       console.error('Booking confirmation failed:', error);
-      alert('There was an error confirming your booking. Please try again.');
+      // Display a more detailed error message if available
+      const errorMessage = error.response?.data?.message || 'There was an error confirming your booking. Please try again.';
+      alert(errorMessage);
     } finally {
       setIsSubmitting(false); // End loading
     }
   };
+  
 
   return (
     <div
@@ -128,20 +147,37 @@ const Modal = ({
           />
         </div>
 
-        {/* Input field for user's name */}
+        {/* Textarea for Service Description */}
         <div className="mb-4">
           <label
-            htmlFor="user-name"
+            htmlFor="service-description"
             className="block text-lg font-medium mb-2 text-gray-700"
           >
-            Your Name:
+            Describe Service You Want:
+          </label>
+          <textarea
+            id="service-description"
+            placeholder="Briefly describe the service you're looking for"
+            value={serviceDescription}
+            onChange={(e) => setServiceDescription(e.target.value)} // Update service description on change
+            className="border border-gray-300 rounded-lg p-2 w-full h-24 resize-none focus:border-purple-500 focus:outline-none text-black"
+          />
+        </div>
+
+        {/* Input field for Address */}
+        <div className="mb-4">
+          <label
+            htmlFor="address"
+            className="block text-lg font-medium mb-2 text-gray-700"
+          >
+            Address:
           </label>
           <input
-            id="user-name"
+            id="address"
             type="text"
-            placeholder="Enter your name"
-            value={userName}
-            onChange={(e) => setUserName(e.target.value)} // Update user name on change
+            placeholder="Enter your address"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)} // Update address on change
             className="border border-gray-300 rounded-lg p-2 w-full focus:border-purple-500 focus:outline-none text-black"
           />
         </div>

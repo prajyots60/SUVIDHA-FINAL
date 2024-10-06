@@ -2,34 +2,46 @@ import Booking from "../models/booking.model.js";
 import User from "../models/user.model.js";
 import Vendor from "../models/vendor.model.js";
 
-// Create Booking
+
 export const createBooking = async (req, res) => {
   try {
-    const { vendorId, serviceDate, preferredTime } = req.body;
+    console.log('Request Body:', req.body);
+    const { vendorId, serviceDate, preferredTime, address, serviceDescription } = req.body;
     const userId = req.user._id; // Assuming the user is authenticated and user info is available on req.user
 
-    // Validate vendor ID (optional but recommended)
+    // Validate required fields
     if (!vendorId) {
       return res.status(400).json({ message: "Vendor ID is required" });
+    }
+    if (!address) {
+      return res.status(400).json({ message: "Address is required" });
+    }
+    if (!serviceDate) {
+      return res.status(400).json({ message: "Service date is required" });
+    }
+    if (!preferredTime) {
+      return res.status(400).json({ message: "Preferred time is required" });
     }
 
     // Create a new booking instance
     const newBooking = new Booking({
-      userId,                   // ID of the user who is booking
-      vendorId,                 // ID of the vendor whose service is being booked
-      name: req.user.name,       // You can also use the user's name
+      userId,                   
+      vendorId,                 
+      address,                 
+      serviceDescription, // Mapped directly
       serviceDate,
       preferredTime,
-      status: "Pending",         // Default status
+      status: "Pending",         
     });
 
     const savedBooking = await newBooking.save();
     res.status(201).json(savedBooking); // Respond with the created booking
   } catch (error) {
     console.error('Error creating booking:', error);
-    res.status(500).json({ message: 'Error creating booking' });
+    res.status(500).json({ message: 'Error creating booking', error: error.message });
   }
 };
+
 
 
 // Get a single booking by ID
@@ -154,7 +166,7 @@ export const fetchVendorBookings = async (req, res) => {
         model: 'User',  // Specify the User model to avoid errors
         select: 'id name email' // Select the name and email fields from the user
       })
-      .select('id status preferredTime serviceDate userId createdAt'); // Select booking fields
+      .select('id status address serviceDescription preferredTime serviceDate userId createdAt'); // Select booking fields
 
     // If no bookings are found
     if (!bookings || bookings.length === 0) {
@@ -166,6 +178,8 @@ export const fetchVendorBookings = async (req, res) => {
       id: booking.id,
       userId: booking.userId?.id,
       status: booking.status,
+      serviceDescription: booking.serviceDescription,
+      address: booking.address,
       preferredTime: booking.preferredTime,
       serviceDate: booking.serviceDate,
       createdAt: booking.createdAt,
@@ -177,6 +191,8 @@ export const fetchVendorBookings = async (req, res) => {
     }));
 
     // console.log(`Returning vendor bookings: ${JSON.stringify(vendorBookings)}`);
+    console.log('Returning vendor bookings:', JSON.stringify(vendorBookings, null, 2));
+
 
     // Send the response
     return res.status(200).json(vendorBookings);
