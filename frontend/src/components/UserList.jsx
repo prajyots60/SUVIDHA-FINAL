@@ -64,10 +64,20 @@ const UserList = () => {
     setStatusUpdating(bookingId);
     try {
       await updateBookingStatus(bookingId, newStatus);
-      // Refresh bookings after updating status
-      fetchVendorBookings();
+  
+      // Update the booking status in the local state
+      const updatedBookings = bookings.map((booking) => {
+        if (booking.id === bookingId) {
+          return { ...booking, status: newStatus }; // Update status
+        }
+        fetchVendorBookings();
+        return booking;
+      });
+
+
     } catch (error) {
       console.error('Error updating booking status:', error);
+      // Show error feedback to user
     } finally {
       setStatusUpdating(null);
     }
@@ -143,9 +153,9 @@ const UserList = () => {
             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex space-x-2">
               <select
                 value={booking.status}
-                onChange={(e) => handleStatusChange(booking._id, e.target.value)}
+                onChange={(e) => handleStatusChange(booking.id, e.target.value)}
                 className="bg-gray-700 text-gray-300 rounded px-2 py-1"
-                disabled={statusUpdating === booking._id}
+                disabled={statusUpdating === booking.id}
               >
                 <option value="Pending">Pending</option>
                 <option value="Confirmed">Confirmed</option>
@@ -214,9 +224,9 @@ const UserList = () => {
                   <div className="mt-2 flex space-x-2">
                     <select
                       value={booking.status}
-                      onChange={(e) => handleStatusChange(booking._id, e.target.value)}
+                      onChange={(e) => handleStatusChange(booking.id, e.target.value)}
                       className="bg-gray-700 text-gray-300 rounded px-2 py-1"
-                      disabled={statusUpdating === booking._id}
+                      disabled={statusUpdating === booking.id}
                     >
                       <option value="Pending">Pending</option>
                       <option value="Confirmed">Confirmed</option>
