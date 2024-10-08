@@ -1,53 +1,81 @@
 import User from "../models/user.model.js";
-import {redis} from "../lib/redis.js";
+import { redis } from "../lib/redis.js";
 import jwt from "jsonwebtoken";
+import nodemailer from "nodemailer"; // Import Nodemailer
 
+// Nodemailer configuration
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST, // Your SMTP host
+  port: process.env.SMTP_PORT, // Your SMTP port
+  secure: false, // true for 465, false for other ports
+  auth: {
+    user: process.env.SMTP_USER, // Your SMTP username
+    pass: process.env.SMTP_PASS, // Your SMTP password
+  },
+});
 
-
-//generate access token and refresh token
+// Generate access token and refresh token
 const generateTokens = (userId) => {
-  const accessToken = jwt.sign({userId}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: "15m"});
-
-  const refreshToken = jwt.sign({userId}, process.env.REFRESH_TOKEN_SECRET, {expiresIn: "7d"});
-
-  return {accessToken, refreshToken};
+  const accessToken = jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
+  const refreshToken = jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
+  return { accessToken, refreshToken };
 };
 
-
-//store refresh token in redis for 7 days
+// Store refresh token in Redis for 7 days
 const storeRefreshToken = async (userId, refreshToken) => {
-  await redis.set(`refresh_Token:${userId}`, refreshToken, "EX", 7*24*60*60); 
+  await redis.set(`refresh_Token:${userId}`, refreshToken, "EX", 7 * 24 * 60 * 60);
 };
 
 const setCookies = (res, accessToken, refreshToken) => {
   res.cookie("accessToken", accessToken, {
-    httpOnly: true, //cookie cannot be accessed by client side scripts
+    httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "strict", //prevents CSRF attacks
-    maxAge: 15*60*1000  //15 minutes
-  })
+    sameSite: "strict",
+    maxAge: 15 * 60 * 1000,
+  });
   res.cookie("refreshToken", refreshToken, {
-    httpOnly: true, //cookie cannot be accessed by client side scripts
+    httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "strict", //prevents CSRF attacks
-    maxAge: 7*24*60*60*1000  //7 days
-  })
-}
+    sameSite: "strict",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
+};
+
+// Send welcome email
+const sendWelcomeEmail = (email, name) => {
+  const mailOptions = {
+    from: process.env.SMTP_USER, // Sender address
+    to: email, // List of receivers
+    subject: "Welcome to Our Service!", // Subject line
+    text: `Hello ${name},\n\nThank you for signing up! We're thrilled to have you on board and to be part of your journey. At Suvidha, we strive to make your experience enjoyable and fulfilling.\n\nIf you have any questions or need assistance, feel free to reach out. We're here to help!\n\nBest wishes,\nThe Suvidha Team`// Plain text body
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.log("Error sending email:", error);
+    } else {
+      console.log("Email sent:", info.response);
+    }
+  });
+};
 
 export const signup = async (req, res) => {
-  const {email, password, name} = req.body;
+  const { email, password, name } = req.body;
   try {
-    const userExists = await User.findOne({email});  //check if user exists
+    const userExists = await User.findOne({ email }); // Check if user exists
 
-    if(userExists) return res.status(400).json({message: "User already exists"});
+    if (userExists) return res.status(400).json({ message: "User already exists" });
 
-    const user = await User.create({name, email, password});  //create new user
+    const user = await User.create({ name, email, password }); // Create new user
 
-    //authenticate
-    const {accessToken, refreshToken} = generateTokens(user._id);
-
-    await storeRefreshToken(user._id, refreshToken); //store refresh token in redis
+    // Authenticate
+    const { accessToken, refreshToken } = generateTokens(user._id);
+    await storeRefreshToken(user._id, refreshToken); // Store refresh token in Redis
     setCookies(res, accessToken, refreshToken);
+    
+    // Send welcome email
+    sendWelcomeEmail(email, name); // Send email after user creation
+
     res.status(201).json({
       _id: user._id,
       name: user.name,
@@ -55,7 +83,7 @@ export const signup = async (req, res) => {
       role: user.role,
     });
   } catch (error) {
-    res.status(500).json({message: "Signup error controller", error: error.message});
+    res.status(500).json({ message: "Signup error controller", error: error.message });
   }
 };
 

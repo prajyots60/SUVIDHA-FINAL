@@ -1,7 +1,18 @@
 import Booking from "../models/booking.model.js";
 import User from "../models/user.model.js";
 import Vendor from "../models/vendor.model.js";
+import nodemailer from "nodemailer"; // Import Nodemailer
 
+// Setup Nodemailer transporter
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: process.env.SMTP_PORT,
+  secure: false, // Use true if your service requires SSL
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+});
 
 export const createBooking = async (req, res) => {
   try {
@@ -25,24 +36,46 @@ export const createBooking = async (req, res) => {
 
     // Create a new booking instance
     const newBooking = new Booking({
-      userId,                   
-      vendorId,                 
-      address,                 
-      serviceDescription, // Mapped directly
+      userId,
+      vendorId,
+      address,
+      serviceDescription,
       serviceDate,
       preferredTime,
-      status: "Pending",         
+      status: "Pending",
     });
 
     const savedBooking = await newBooking.save();
+
+    // Prepare the email content
+    const user = await User.findById(userId); // Fetch user details for email
+    const vendor = await Vendor.findById(vendorId)
+    .populate ({
+      path: 'userId', // Populate user details from vendor
+      model: 'User',  // Specify the model to avoid errors
+      select: 'name email' // Select only name and email from user
+    }); // Fetch vendor details for email
+
+    const vendorName = vendor?.userId?.name || "Unknown Vendor";
+    const category = vendor?.category || "Unknown Category";
+    
+    const mailOptions = {
+      from: process.env.SMTP_USER,
+      to: user.email, // User's email
+      subject: 'Booking Confirmation - Suvidha',
+      text: `Hello ${user.name},\n\nThank you for booking our service: ${category}.\n\nHere are your booking details:\n Vendor: ${vendorName}\n- Service Date: ${serviceDate}\n- Preferred Time: ${preferredTime}\n- Address: ${address}\n-Status: Pending\n\nWe encourage you to keep checking our website to see your booking status and any updates related to your service.\n If you have any questions or need assistance, feel free to reach out.\n\nBest wishes,\nThe Suvidha Team`,
+    };
+
+    // Send the confirmation email
+    await transporter.sendMail(mailOptions);
+    console.log('Booking confirmation email sent successfully!');
+
     res.status(201).json(savedBooking); // Respond with the created booking
   } catch (error) {
     console.error('Error creating booking:', error);
     res.status(500).json({ message: 'Error creating booking', error: error.message });
   }
 };
-
-
 
 // Get a single booking by ID
 export const getBookingById = async (req, res) => {
