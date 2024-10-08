@@ -4,14 +4,22 @@ import Vendor from "../models/vendor.model.js";
 import nodemailer from "nodemailer"; // Import Nodemailer
 
 // Setup Nodemailer transporter
+// const transporter = nodemailer.createTransport({
+//   host: process.env.SMTP_HOST,
+//   port: process.env.SMTP_PORT,
+//   secure: false, // Use true if your service requires SSL
+//   auth: {
+//     user: process.env.SMTP_USER,
+//     pass: process.env.SMTP_PASS,
+//   },
+// });
+
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: process.env.SMTP_PORT,
-  secure: false, // Use true if your service requires SSL
+  service: 'gmail', // Using Gmail's SMTP server
   auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
 });
 
 export const createBooking = async (req, res) => {
