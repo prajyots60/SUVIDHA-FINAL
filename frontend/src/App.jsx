@@ -5,7 +5,7 @@ import Services from './components/Services';
 import ServiceCategory from './components/ServiceCategory.jsx';
 import Footer from './components/Footer';
 import { Toaster } from "react-hot-toast";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 // Import the vendor management pages
 import Home from './pages/Home';
@@ -20,16 +20,18 @@ import SignUpPage from './pages/SignupPage';
 
 // Import user store and loading spinner
 import { useUserStore } from "./stores/useUserStore.js";
-// import LoadingSpinner from "./components/LoadingSpinner.jsx";
+import LoadingSpinner from "./components/LoadingSpinner.jsx";
 import AdminPage from "./pages/AdminPage.jsx";
 import ProfilePage from "./pages/ProfilePage.jsx";
 import VendorsByCategory from "./components/VendorsByCategory.jsx";
 import ServicesPage from "./pages/ServicesPage.jsx";
 import ContactUs from "./pages/ContactUsPage.jsx";
-import Spinner from "./pages/Spinner.jsx";
+import SearchList from "./components/SearchList.jsx";
 
 function App() {
   const { user, checkAuth, checkingAuth } = useUserStore();
+
+  const [vendors, setVendors] = useState([]);
 
   // Check authentication status on mount
   useEffect(() => {
@@ -37,7 +39,7 @@ function App() {
   }, [checkAuth]);
 
   if (checkingAuth) {
-    return <Spinner />;
+    return <LoadingSpinner />;
   }
 
   return (
@@ -56,7 +58,7 @@ function App() {
             {/* Route for the homepage */}
             <Route path="/" element={
               <>
-                <Hero />
+                <Hero handleSearch={setVendors} />
                 <ServiceCategory />
                 <Services />
                 <VendorList />
@@ -78,6 +80,8 @@ function App() {
             <Route path="/contact-us" element={<ContactUs />} />
 
             <Route path="/category/:category" element={<VendorsByCategory />} />
+
+            <Route path="/search-vendors" element={<SearchList vendors={vendors} />} />
 
             {/* Authentication routes */}
             <Route path='/signup' element={!user ? <SignUpPage /> : <Navigate to='/' />} />

@@ -232,7 +232,7 @@ export const fetchVendorBookings = async (req, res) => {
     }));
 
     // console.log(`Returning vendor bookings: ${JSON.stringify(vendorBookings)}`);
-    console.log('Returning vendor bookings:', JSON.stringify(vendorBookings, null, 2));
+    // console.log('Returning vendor bookings:', JSON.stringify(vendorBookings, null, 2));
 
 
     // Send the response
@@ -260,7 +260,7 @@ export const updateBookingStatus = async (req , res) => {
       return res.status(404).json({ message: 'Booking not found' });
     }
 
-    console.log("Updated booking status:", updatedBooking);
+    // console.log("Updated booking status:", updatedBooking);
 
     const user = await User.findById(updatedBooking.userId);
     const vendor = await Vendor.findById(updatedBooking.vendorId).populate({

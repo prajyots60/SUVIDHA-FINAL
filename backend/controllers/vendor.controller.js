@@ -1,35 +1,6 @@
 import Vendor from "../models/vendor.model.js";
 import cloudinary from "cloudinary";
 
-// Create Vendor
-// export const createVendor = async (req, res) => {
-//   const { name, address, occupation, email, description, location, category } = req.body;
-
-//   try {
-//     // Cloudinary will automatically handle the uploading
-//     const profileImageUrl = req.file ? req.file.path : null; // Getting path from multer
-//     const galleryImageUrls = req.files ? req.files.map(file => file.path) : []; // Getting paths for gallery images
-
-//     // Create the new vendor instance
-//     const newVendor = new Vendor({
-//       name,
-//       address,
-//       occupation,
-//       email,
-//       description,
-//       location,
-//       category,
-//       profileImage: profileImageUrl,
-//       galleryImages: galleryImageUrls,
-//     });
-
-//     await newVendor.save();
-//     res.status(201).json(newVendor);
-//   } catch (error) {
-//     console.error('Error creating vendor:', error);
-//     res.status(500).json({ message: 'Error creating vendor', error: error.message });
-//   }
-// };
 
 export const createVendor = async (req, res) => {
   const {
@@ -167,5 +138,22 @@ export const getVendorsByCategory = async (req, res) => {
   } catch (error) {
     console.error("Error in getVendorsByCategory controller", error.message);
     res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+export const searchVendors = async (req, res) => {
+  const { location, category } = req.query;
+
+  try {
+    const query = {};
+    if (location) query.location = { $regex: location, $options: 'i' }; // Case-insensitive
+    if (category) query.category = { $regex: category, $options: 'i' };
+
+    const vendors = await Vendor.find(query);
+    console.log(vendors);
+    res.json(vendors);
+  } catch (error) {
+    console.error('Error fetching vendors:', error);
+    res.status(500).json({ message: error.message });
   }
 };

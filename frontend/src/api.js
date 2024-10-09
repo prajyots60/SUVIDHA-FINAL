@@ -37,19 +37,28 @@ export const fetchVendorsByCategory = async (category) => {
 
 // Create a new vendor
 export const createVendor = (vendorData) => axiosInstance.post(`${API_URL}`, vendorData);
-// export const createVendor = async (vendorData) => {
-//   return await axiosInstance.post('/api/vendors', vendorData, {
-//       headers: {
-//           'Content-Type': 'multipart/form-data', // Ensure this is set
-//       },
-//   });
-// };
+
 
 // Update a vendor by ID
 export const updateVendor = (id, vendorData) => axiosInstance.put(`${API_URL}/${id}`, vendorData);
 
 // Delete a vendor by ID
 export const deleteVendor = (id) => axiosInstance.delete(`${API_URL}/${id}`);
+
+
+export const searchVendors = async (location, category) => {
+  try {
+    console.log("location", location, "category", category);
+    const response = await axiosInstance.get(`${API_URL}/search/vend`, {
+      params: { location, category },
+    });
+    console.log('Fetched vendors:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching vendors:', error);
+    throw error;
+  }
+};
 
 
 

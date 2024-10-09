@@ -7,7 +7,8 @@ import {
   updateVendor,
   deleteVendor,
   getVendorByUserId,
-  getVendorsByCategory
+  getVendorsByCategory,
+  searchVendors
 } from "../controllers/vendor.controller.js";
 import { get } from "mongoose";
 
@@ -18,8 +19,6 @@ const router = express.Router();
 // Create a new vendor with profile and gallery images
 router.post('/', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'gallery', maxCount: 10 }]), createVendor);
 
-// router.post('/', upload.single('image'), upload.array('gallery'), createVendor);
-
 
 // Update a vendor by ID with optional image and gallery updates
 router.put('/:id', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'gallery', maxCount: 10 }]), updateVendor);
@@ -28,14 +27,24 @@ router.put('/:id', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'galle
 router.get('/', getVendors);
 
 // Get a specific vendor by ID
+
+router.get("/category/:category", getVendorsByCategory);
+
+// router.get('/search' , searchVendors);
+
+router.get('/search/vend', (req, res, next) => {
+  console.log('Incoming request params:', req.query);
+  next();
+}, searchVendors);
+
 router.get('/:id', getVendorById);
 
 // Get a vendor by user ID
 router.get('/:userId', getVendorByUserId);
 
-router.get("/category/:category", getVendorsByCategory);
-
 // Delete a vendor by ID
 router.delete('/:id', deleteVendor);
+
+
 
 export default router;
