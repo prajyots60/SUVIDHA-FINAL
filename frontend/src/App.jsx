@@ -20,7 +20,8 @@ import SignUpPage from './pages/SignupPage';
 
 // Import user store and loading spinner
 import { useUserStore } from "./stores/useUserStore.js";
-import LoadingSpinner from "./components/LoadingSpinner.jsx";
+// import LoadingSpinner from "./components/LoadingSpinner.jsx";
+import Spinner from "./pages/Spinner.jsx";
 import AdminPage from "./pages/AdminPage.jsx";
 import ProfilePage from "./pages/ProfilePage.jsx";
 import VendorsByCategory from "./components/VendorsByCategory.jsx";
@@ -39,7 +40,7 @@ function App() {
   }, [checkAuth]);
 
   if (checkingAuth) {
-    return <LoadingSpinner />;
+    return <Spinner />;
   }
 
   return (
