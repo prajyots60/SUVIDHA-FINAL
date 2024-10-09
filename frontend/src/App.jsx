@@ -20,12 +20,13 @@ import SignUpPage from './pages/SignupPage';
 
 // Import user store and loading spinner
 import { useUserStore } from "./stores/useUserStore.js";
-import LoadingSpinner from "./components/LoadingSpinner.jsx";
+// import LoadingSpinner from "./components/LoadingSpinner.jsx";
 import AdminPage from "./pages/AdminPage.jsx";
 import ProfilePage from "./pages/ProfilePage.jsx";
 import VendorsByCategory from "./components/VendorsByCategory.jsx";
 import ServicesPage from "./pages/ServicesPage.jsx";
 import ContactUs from "./pages/ContactUsPage.jsx";
+import Spinner from "./pages/Spinner.jsx";
 
 function App() {
   const { user, checkAuth, checkingAuth } = useUserStore();
@@ -36,7 +37,7 @@ function App() {
   }, [checkAuth]);
 
   if (checkingAuth) {
-    return <LoadingSpinner />;
+    return <Spinner />;
   }
 
   return (
