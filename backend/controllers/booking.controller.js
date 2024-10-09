@@ -253,7 +253,7 @@ export const updateBookingStatus = async (req , res) => {
       bookingId,
       {status}, // Update the status field
       // {new: true }   // Return the updated whole document
-      {new: true, select: 'status'}    // Return the updated status only
+      {new: true, select: 'status userId vendorId'}    // Return the updated status only
     );
 
     if (!updatedBooking) {
@@ -261,6 +261,39 @@ export const updateBookingStatus = async (req , res) => {
     }
 
     console.log("Updated booking status:", updatedBooking);
+
+    const user = await User.findById(updatedBooking.userId);
+    const vendor = await Vendor.findById(updatedBooking.vendorId).populate({
+      path: 'userId',
+      model: 'User',
+      select: 'name email', // Get vendor's name and email
+    });
+
+    if (!user || !vendor) {
+      return res.status(404).json({ message: 'User or vendor not found' });
+    }
+
+    const vendorName = vendor.userId?.name || "Unknown Vendor";
+    const userEmail = user.email;
+
+    // Prepare the email content
+    const mailOptions = {
+      from: process.env.SMTP_USER,
+      to: userEmail, // User's email
+      subject: 'Booking Status Updated',
+      text: `Hello ${user.name},\n\nYour booking status has been updated to: ${status}.\n\nVendor: ${vendorName}\n\nPlease check your account for more details.\n\nBest regards,\nThe Suvidha Team`,
+    };
+
+    // Send the email notification
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log("Error sending email:", error);
+      } else {
+        console.log("Email sent:", info.response);
+      }
+    });
+
+
     // res.status(200).json(updatedBooking);
     res.status(200).json({status: updatedBooking.status});
   } catch (error) {
