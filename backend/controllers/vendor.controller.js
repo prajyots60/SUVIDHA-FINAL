@@ -49,7 +49,6 @@ export const createVendor = async (req, res) => {
 
 
 
-
 // Get all vendors
 export const getVendors = async (req, res) => {
   try {
@@ -149,7 +148,7 @@ export const searchVendors = async (req, res) => {
     if (location) query.location = { $regex: location, $options: 'i' }; // Case-insensitive
     if (category) query.category = { $regex: category, $options: 'i' };
 
-    const vendors = await Vendor.find(query);
+    const vendors = await Vendor.find(query).populate('userId', 'name email');
     console.log(vendors);
     res.json(vendors);
   } catch (error) {
