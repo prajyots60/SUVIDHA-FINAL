@@ -12,6 +12,8 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+const generateOTP = () => Math.floor(100000 + Math.random() * 900000);
+
 // Generate access token and refresh token
 const generateTokens = (userId) => {
   const accessToken = jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
@@ -39,6 +41,25 @@ const setCookies = (res, accessToken, refreshToken) => {
   });
 };
 
+
+// Send OTP email
+const sendOTPEmail = (email, otp) => {
+  const mailOptions = {
+    from: process.env.SMTP_USER,
+    to: email,
+    subject: "Your OTP Code",
+    text: `Your OTP code is ${otp}. It is valid for 10 minutes.`,
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.log("Error sending OTP email:", error);
+    } else {
+      console.log("OTP email sent:", info.response);
+    }
+  });
+};
+
 // Send welcome email
 const sendWelcomeEmail = (email, name) => {
   const mailOptions = {
@@ -57,13 +78,55 @@ const sendWelcomeEmail = (email, name) => {
   });
 };
 
+export const sendOTP = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const userExists = await User.findOne({ email });
+    if (userExists) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+
+    // Generate OTP
+    const otp = generateOTP();
+
+    // Store OTP in Redis with a 10-minute expiration
+    const result = await redis.set(`otp:${email}`, otp, "EX", 10 * 60);
+
+    // console.log("Stored OTP:", result);
+    // Send OTP via email
+    sendOTPEmail(email, otp);
+
+    res.status(200).json({ message: "OTP sent successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error sending OTP", error: error.message });
+  }
+};
+
+
+export const verifyOTP = async (req, res) => {
+  const { email, otp } = req.body;
+  
+  try {
+    const storedOTP = await redis.get(`otp:${email}`);
+    if (!storedOTP || storedOTP !== otp) {
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
+
+    // OTP is valid, proceed with further logic (e.g., user signup)
+    return res.status(200).json({success: true, message: "OTP verified successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error verifying OTP", error: error.message });
+  }
+};
+
 export const signup = async (req, res) => {
   const { email, password, name } = req.body;
   try {
     const userExists = await User.findOne({ email }); // Check if user exists
 
     if (userExists) return res.status(400).json({ message: "User already exists" });
-
+    
     const user = await User.create({ name, email, password }); // Create new user
 
     // Authenticate
@@ -84,6 +147,7 @@ export const signup = async (req, res) => {
     res.status(500).json({ message: "Signup error controller", error: error.message });
   }
 };
+
 
 export const login = async (req, res) => {
   try {
@@ -251,5 +315,6 @@ export const updatePassword = async (req, res) => {
     res.status(500).json({ message: 'Error updating password', error: error.message });
   }
 };
+
 
 

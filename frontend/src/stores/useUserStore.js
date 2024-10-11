@@ -6,8 +6,63 @@ export const useUserStore = create((set, get) => ({
   user: null,
   loading: false,
   checkingAuth: true,
+  countdown: 60, 
+  resendEnabled: true, 
+  otpVerified: false,
 
-  signup: async ({ name, email, password, confirmPassword }) => {
+  sendOtp: async (email) => {
+    set({ loading: true });
+
+    try {
+      console.log("Sending OTP to:", email);
+      const res = await axios.post('/auth/verify/send-otp', email ); 
+     
+      get().startCountdown();
+      set({ loading: false });
+      return res.data;
+    } catch (error) {
+      set({ loading: false });
+     
+      console.error('Error sending OTP:', error);
+    }
+  },
+
+  startCountdown: () => {
+    set({ resendEnabled: false }); 
+    let timer = 60; 
+
+    const interval = setInterval(() => {
+        timer -= 1; 
+        set({ countdown: timer }); 
+
+        if (timer <= 0) {
+            clearInterval(interval); 
+            set({ resendEnabled: true, countdown: 60 }); 
+        }
+    }, 1000);
+},
+
+  verifyOtp: async (email, otp) => {
+    set({ loading: true });
+
+    try {
+     const res = await axios.post('/auth/verify/email-otp', { email, otp });
+     if (res.data.success) {
+      toast.success(res.data.message);
+      console.log("User: ", res.data);
+      set({ otpVerified: true }); 
+    } else {
+      toast.error(res.data.message); 
+    }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Error verifying OTP');
+      console.error('Error verifying OTP:', error);
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  signup: async ({ name, email, password, confirmPassword, otp }) => {
     set({ loading: true });
 
     if (password !== confirmPassword) {
@@ -15,9 +70,8 @@ export const useUserStore = create((set, get) => ({
       set({ loading: false });
       return;
     }
-
     try {
-      const res = await axios.post("/auth/signup", { name, email, password });
+      const res = await axios.post("/auth/signup", { name, email, password, otp });
       set({ user: res.data, loading: false });
       toast.success("Signed up successfully");
     } catch (error) {
@@ -76,7 +130,7 @@ export const useUserStore = create((set, get) => ({
     try {
       const res = await axios.patch("/auth/update", data); // Update route
       set((state) => ({
-        user: { ...state.user, ...res.data }, // Correctly update user in store
+        user: { ...state.user, ...res.data }, 
       }));
       toast.success("Profile updated successfully!");
       return true; // Indicate success

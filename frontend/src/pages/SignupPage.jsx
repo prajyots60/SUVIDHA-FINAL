@@ -1,8 +1,9 @@
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { UserPlus, Mail, Lock, User, ArrowRight, Loader } from "lucide-react";
+import { UserPlus, Mail, Lock, User, ArrowRight, Loader, Key } from "lucide-react";
 import { motion } from "framer-motion";
+import toast from "react-hot-toast";
 import { useUserStore } from "../stores/useUserStore.js";
 
 
@@ -12,12 +13,50 @@ const SignUpPage = () => {
 		email: "",
 		password: "",
 		confirmPassword: "",
+		otp: "",
 	});
 
-	const {signup, loading} = useUserStore();
+	const [otpSent, setOtpSent] = useState(false);
+	const {signup, loading, sendOtp, resendEnabled, countdown, verifyOtp, otpVerified } = useUserStore();
+
+	const handleSendOtp = async (e) => {
+		e.preventDefault();
+
+		try {
+			await sendOtp({ email: formData.email });
+			setOtpSent(true);
+			toast.success("OTP sent to your email");
+		} catch (error) {
+			console.error("Error sending OTP:", error);
+			toast.error("Failed to send OTP");
+		}
+	};
+
+	const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    if (!formData.otp) {
+      toast.error("Please enter the OTP.");
+      return;
+    }
+
+    try {
+     await verifyOtp(formData.email, formData.otp);
+    } catch (error) {
+      console.error("Error verifying OTP:", error);
+    }
+  };
+
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
+		if(!otpSent) {
+			toast.error("Please request an OTP before signing up.");
+			return;
+		}
+		if (!otpVerified) { // Check if OTP is verified before proceeding
+			toast.error("Please verify your OTP before signing up.");
+			return;
+		}
     signup(formData);
 	};
 
@@ -84,6 +123,78 @@ const SignUpPage = () => {
 							</div>
 						</div>
 
+						{/* Button to send OTP */}
+						{!otpSent && (
+							<button
+								onClick={handleSendOtp}
+								className='w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-150 ease-in-out disabled:opacity-50'
+								disabled={loading}
+							>
+								{loading ? (
+									<>
+										<Loader className='mr-2 h-5 w-5 animate-spin' aria-hidden='true' />
+										Sending OTP...
+									</>
+								) : (
+									<>
+										<Key className='mr-2 h-5 w-5' aria-hidden='true' />
+										Send OTP
+									</>
+								)}
+							</button>
+						)}
+
+						 {/* OTP Input */}
+						 {otpSent && (
+              <div>
+                <label htmlFor="otp" className="block text-sm font-medium text-gray-300">
+                  OTP
+                </label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Key className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                  </div>
+                  <input
+                    id="otp"
+                    type="text"
+                    required
+                    value={formData.otp}
+                    onChange={(e) => setFormData({ ...formData, otp: e.target.value })}
+                    className="block w-full px-3 py-2 pl-10 bg-gray-700 border border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                    placeholder="Enter OTP"
+                  />
+                </div>
+
+                {/* Resend OTP button */}
+                <div className="mt-2">
+                  <button
+                    type="button"
+                    onClick={handleSendOtp}
+                    disabled={!resendEnabled}
+                    className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium ${resendEnabled ? 'text-white bg-purple-600 hover:bg-purple-700' : 'text-gray-400 bg-gray-600'} transition duration-150 ease-in-out`}
+                  >
+                    {resendEnabled ? (
+                      "Resend OTP"
+                    ) : (
+                      `Resend in ${countdown}s`
+                    )}
+                  </button>
+                </div>
+
+                {/* OTP Verification Button */}
+                <div className="mt-2">
+                  <button
+                    type="button"
+                    onClick={handleVerifyOtp}
+                    className='w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out'
+                  >
+                    Verify OTP
+                  </button>
+                </div>
+              </div>
+            )}
+
+
 						<div>
 							<label htmlFor='password' className='block text-sm font-medium text-gray-300'>
 								Password
@@ -132,7 +243,7 @@ const SignUpPage = () => {
 							rounded-md shadow-sm text-sm font-medium text-white bg-purple-600
 							 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2
 							  focus:ring-purple-500 transition duration-150 ease-in-out disabled:opacity-50'
-							disabled={loading}
+							disabled={loading || !otpVerified}
 						>
 							{loading ? (
 								<>
