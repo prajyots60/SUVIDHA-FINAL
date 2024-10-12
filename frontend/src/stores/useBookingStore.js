@@ -1,7 +1,7 @@
 import {create} from 'zustand';
 import axiosInstance from '../lib/axios'; // Assuming you have an axios instance set up
 
-export const useBookingStore = create((set) => ({
+export const useBookingStore = create((set,get) => ({
   bookings: [], // Initial state for bookings
   loading: false, // Loading state
   error: null, // Error state
@@ -18,11 +18,39 @@ export const useBookingStore = create((set) => ({
     }
   },
 
-  // Delete booking
+  deleteBooking: async (bookingId) => {
+    // Get the current state of bookings
+    const currentBookings = get().bookings;
+  
+    // Immediately update the state to remove the booking
+    set({
+      bookings: currentBookings.filter((booking) => booking._id !== bookingId),
+      loading: true,
+    });
+  
+    try {
+      console.log("Deleting booking with ID:", bookingId);
+      await axiosInstance.delete(`/bookings/delete/${bookingId}`);
+      get().fetchBookings();
+      // No further action needed if the delete was successful
+      set({ loading: false });
+    } catch (error) {
+      // If an error occurs, revert to the previous bookings state
+      set({
+        bookings: currentBookings, // Revert to original bookings
+        error: error.message,
+        loading: false,
+      });
+      console.error('Error deleting booking:', error);
+    }
+  },
+  
+
   // deleteBooking: async (bookingId) => {
   //   set({ loading: true });
   //   try {
-  //     await axiosInstance.delete(`/bookings/${bookingId}`); // Adjust this endpoint to match your delete logic
+  //     console.log("Deleting booking with ID:", bookingId);
+  //       await axiosInstance.delete(`/bookings/delete/${bookingId}`); // Send ID in the body
   //     set((state) => ({
   //       bookings: state.bookings.filter((booking) => booking._id !== bookingId), // Remove booking from state
   //       loading: false,
@@ -32,22 +60,6 @@ export const useBookingStore = create((set) => ({
   //     console.error('Error deleting booking:', error);
   //   }
   // },
-
-
-  deleteBooking: async (bookingId) => {
-    set({ loading: true });
-    try {
-      console.log("Deleting booking with ID:", bookingId);
-        await axiosInstance.delete(`/bookings/${bookingId}`); // Send ID in the body
-      set((state) => ({
-        bookings: state.bookings.filter((booking) => booking._id !== bookingId), // Remove booking from state
-        loading: false,
-      }));
-    } catch (error) {
-      set({ error: error.message, loading: false });
-      console.error('Error deleting booking:', error);
-    }
-  },
 
 
   updateBookingStatus: async (bookingId, newStatus) => {

@@ -137,7 +137,7 @@ const BookingList = () => {
                   <div className='text-sm text-gray-400'>{booking.serviceDate ? new Date(booking.serviceDate).toLocaleDateString() : 'N/A'}</div>
                 </div>
               </div>
-              <button onClick={(e) => { e.stopPropagation(); deleteBooking(booking._id); }} className='text-red-400 hover:text-red-300' aria-label={`Delete booking for ${booking.vendor.name}`}>
+              <button onClick={(e) => { e.stopPropagation(); deleteBooking(booking.id); }} className='text-red-400 hover:text-red-300' aria-label={`Delete booking for ${booking.vendor.name}`}>
                 <Trash className='h-5 w-5' />
               </button>
             </div>

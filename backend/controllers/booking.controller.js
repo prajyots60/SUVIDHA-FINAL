@@ -118,16 +118,15 @@ export const updateBooking = async (req, res) => {
 export const deleteBooking = async (req, res) => {
   try {
     const { id } = req.params; // Destructure id from the request body
-    console.log("Received ID:", id); // Debugging line
+    // console.log("Received ID:", id); // Debugging line
     
     if (!id) {
       return res.status(400).json({ message: "Booking ID is required." });
     }
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ message: "Invalid Booking ID format." });
-    }
-
+    // if (!mongoose.Types.ObjectId.isValid(id)) {
+    //   return res.status(400).json({ message: "Invalid Booking ID format." });
+    // }
     const booking = await Booking.findByIdAndDelete(id);
     if (!booking) return res.status(404).json({ message: "Booking not found" });
     res.status(200).json({ message: "Booking deleted successfully" });
@@ -136,7 +135,6 @@ export const deleteBooking = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 
 export const getUserBookings = async (req, res) => {
@@ -233,7 +231,6 @@ export const fetchVendorBookings = async (req, res) => {
 
     // console.log(`Returning vendor bookings: ${JSON.stringify(vendorBookings)}`);
     // console.log('Returning vendor bookings:', JSON.stringify(vendorBookings, null, 2));
-
 
     // Send the response
     return res.status(200).json(vendorBookings);
