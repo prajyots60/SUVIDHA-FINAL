@@ -6,7 +6,7 @@ const SearchList = () => {
   const location = useLocation();
   const vendors = location.state?.vendors || []; // Get vendors from location state, default to an empty array if not found
 
-  console.log(vendors); // For debugging
+  // console.log(vendors); // For debugging
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -23,7 +23,7 @@ const SearchList = () => {
               occupation={vendor.category} // Assuming category represents occupation
               price={vendor.price} // You may need to adjust this if price is not a direct property
               address={vendor.address} // Assuming location is the address
-              image={vendor.profileImage} // Add image URL if available in the vendor data
+              image={vendor.profileImage} // Add image URL if available in the vendor data 
             />
           ))
         )}
