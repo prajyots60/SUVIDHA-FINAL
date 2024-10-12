@@ -19,10 +19,11 @@ export const useUserStore = create((set, get) => ({
      
       get().startCountdown();
       set({ loading: false });
+      toast.success(res.data.message);
       return res.data;
     } catch (error) {
       set({ loading: false });
-     
+      toast.error(error.response?.data?.message || 'Error sending OTP');
       console.error('Error sending OTP:', error);
     }
   },
@@ -60,6 +61,10 @@ export const useUserStore = create((set, get) => ({
     } finally {
       set({ loading: false });
     }
+  },
+
+  setOtpVerified: (value) => {
+    set({ otpVerified: value });
   },
 
   signup: async ({ name, email, password, confirmPassword, otp }) => {

@@ -1,4 +1,5 @@
 
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { UserPlus, Mail, Lock, User, ArrowRight, Loader, Key } from "lucide-react";
@@ -17,7 +18,7 @@ const SignUpPage = () => {
 	});
 
 	const [otpSent, setOtpSent] = useState(false);
-	const {signup, loading, sendOtp, resendEnabled, countdown, verifyOtp, otpVerified } = useUserStore();
+	const {signup, loading, sendOtp, resendEnabled, countdown, verifyOtp, otpVerified, setOtpVerified } = useUserStore();
 
 	const handleSendOtp = async (e) => {
 		e.preventDefault();
@@ -25,10 +26,9 @@ const SignUpPage = () => {
 		try {
 			await sendOtp({ email: formData.email });
 			setOtpSent(true);
-			toast.success("OTP sent to your email");
+			setOtpVerified(false);
 		} catch (error) {
 			console.error("Error sending OTP:", error);
-			toast.error("Failed to send OTP");
 		}
 	};
 
@@ -183,13 +183,15 @@ const SignUpPage = () => {
 
                 {/* OTP Verification Button */}
                 <div className="mt-2">
-                  <button
-                    type="button"
-                    onClick={handleVerifyOtp}
-                    className='w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out'
-                  >
-                    Verify OTP
-                  </button>
+								<button
+									type="button"
+									onClick={handleVerifyOtp}
+									className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out ${otpVerified ? 'opacity-50 cursor-not-allowed' : ''}`}
+									disabled={otpVerified} // Corrected the disabled attribute
+								>
+									Verify OTP
+								</button>
+
                 </div>
               </div>
             )}

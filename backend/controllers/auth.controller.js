@@ -80,7 +80,7 @@ const sendWelcomeEmail = (email, name) => {
 
 export const sendOTP = async (req, res) => {
   const { email } = req.body;
-
+  console.log("Sending OTP to:", email);
   try {
     const userExists = await User.findOne({ email });
     if (userExists) {
