@@ -107,7 +107,7 @@ const UserList = () => {
           </thead>
           <tbody className="bg-gray-900 divide-y divide-gray-600">
             {sortedBookings.map((booking) => {
-              console.log("booking",booking);
+              // console.log("booking",booking);
               const userName = booking.user.name || 'Unknown User';
               const firstLetter = userName.charAt(0).toUpperCase();
 

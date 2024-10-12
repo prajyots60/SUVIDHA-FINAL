@@ -73,7 +73,7 @@ export const useBookingStore = create((set) => ({
       // Fetching bookings for the current vendor (no need for vendorId as it's fetched based on userId)
       const response = await axiosInstance.get('/bookings/vendor-bookings');
 
-      console.log('Fetched Bookings:', response.data);
+      // console.log('Fetched Bookings:', response.data);
       
       set({ bookings: response.data, loading: false });
     } catch (error) {

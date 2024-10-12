@@ -11,7 +11,7 @@ const BookingList = () => {
   useEffect(() => {
     const loadBookings = async () => {
       try {
-        console.log("Fetching bookings...");
+        // console.log("Fetching bookings...");
         await fetchBookings();
       } catch (err) {
         console.error("Error fetching bookings:", err);
@@ -55,7 +55,7 @@ const BookingList = () => {
 
           <tbody className='bg-gray-900 divide-y divide-gray-600'>
   {sortedBookings.map((booking) => {
-    console.log("Booking object:", booking); // Log the whole booking object
+    // console.log("Booking object:", booking); // Log the whole booking object
     return (  // Return the JSX
       <tr key={booking._id} className='hover:bg-gray-700'>
         <td className='px-6 py-4 whitespace-nowrap max-w-[150px] overflow-hidden text-ellipsis'>

@@ -13,7 +13,7 @@ const VendorList = () => {
     const fetchVendors = async () => {
       try {
         const response = await getVendors();
-        console.log("Fetched vendors:", response.data);
+        // console.log("Fetched vendors:", response.data);
         setVendors(response.data);
       } catch (error) {
         console.error("Error fetching vendors:", error);
@@ -25,7 +25,7 @@ const VendorList = () => {
     fetchVendors();
   }, []);
 
-  if (loading) return <p><LoadingSpinner /></p>;
+  if (loading) return <div><LoadingSpinner /></div>;
   if (error) return <p className="text-red-500">{error}</p>;
 
   return (

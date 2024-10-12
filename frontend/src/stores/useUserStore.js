@@ -14,7 +14,6 @@ export const useUserStore = create((set, get) => ({
     set({ loading: true });
 
     try {
-      console.log("Sending OTP to:", email);
       const res = await axios.post('/auth/verify/send-otp', email ); 
      
       get().startCountdown();
@@ -50,7 +49,7 @@ export const useUserStore = create((set, get) => ({
      const res = await axios.post('/auth/verify/email-otp', { email, otp });
      if (res.data.success) {
       toast.success(res.data.message);
-      console.log("User: ", res.data);
+      // console.log("User: ", res.data);
       set({ otpVerified: true }); 
     } else {
       toast.error(res.data.message); 
@@ -90,7 +89,7 @@ export const useUserStore = create((set, get) => ({
     set({ loading: true });
     try {
       const res = await axios.post("/auth/login", { email, password });
-      console.log("User: ", res.data);
+      // console.log("User: ", res.data);
       set({ user: res.data, loading: false });
       toast.success("Logged In successfully");
     } catch (error) {
@@ -123,7 +122,7 @@ export const useUserStore = create((set, get) => ({
     set({ checkingAuth: true });
     try {
       const res = await axios.get("/auth/current");
-      console.log("User: ", res.data);
+      // console.log("User: ", res.data);
       set({ user: res.data, checkingAuth: false });
     } catch (error) {
       set({ checkingAuth: false, user: null });

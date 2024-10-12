@@ -1,4 +1,4 @@
-/* eslint-disable react/no-unknown-property */
+
 
 const Spinner = () => {
   return (
@@ -15,7 +15,7 @@ const Spinner = () => {
       </div>
 
       {/* Spinner Styling */}
-      <style jsx>{`
+      <style>{`
         .loader {
           width: 100px; /* Increase size of the spinner */
           aspect-ratio: 1;

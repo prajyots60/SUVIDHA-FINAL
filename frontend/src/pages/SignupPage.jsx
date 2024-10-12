@@ -24,6 +24,10 @@ const SignUpPage = () => {
 		e.preventDefault();
 
 		try {
+			if (!formData.email) {
+				toast.error("Please enter your email.");
+				return;
+			}
 			await sendOtp({ email: formData.email });
 			setOtpSent(true);
 			setOtpVerified(false);
